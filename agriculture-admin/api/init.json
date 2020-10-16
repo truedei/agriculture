@@ -1,0 +1,95 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "welcome.html?t=1"
+  },
+  "logoInfo": {
+    "title": "农乐城",
+    "image": "images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "农乐城",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "主页",
+          "href": "welcome.html",
+          "icon": "fa fa-home",
+          "target": "_self"
+        },
+        {
+          "title": "用户管理",
+          "href": "",
+          "icon": "fa fa-file-text",
+          "target": "_self",
+          "child": [
+            {
+              "title": "会员用户管理",
+              "href": "managerVIP.html",
+              "icon": "fa fa-file-text",
+              "target": "_self"
+            },{
+              "title": "管理员用户管理",
+              "href": "managerAdmin.html",
+              "icon": "fa fa-file-text",
+              "target": "_self"
+            }
+          ]
+        },{
+          "title": "交易记录",
+          "href": "managerOrder.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        }, {
+          "title": "系统设置",
+          "href": "",
+          "icon": "fa fa-gears",
+          "target": "_self",
+          "child": [
+            {
+              "title": "菜单管理",
+              "href": "404.html",
+              "icon": "fa fa-window-maximize",
+              "target": "_self"
+            },
+            {
+              "title": "字典管理",
+              "href": "sysConfig.html",
+              "icon": "fa fa-window-maximize",
+              "target": "_self"
+            }
+          ]
+        },{
+          "title": "后台API文档",
+          "href": "http://127.0.0.1:8080/doc.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        }
+      ]
+    }
+    ,
+    {
+      "title": "商品管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "发布商品",
+          "href": "managerProductAdd.html",
+          "icon": "fa fa-home",
+          "target": "_self"
+        },{
+          "title": "商品管理",
+          "href": "managerProduct.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        }
+      ]
+    }
+  ]
+}

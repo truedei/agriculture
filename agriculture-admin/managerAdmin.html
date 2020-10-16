@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="css/public.css" media="all">
+</head>
+
+<style>
+    #layui-table-page1{
+        text-align: center;
+    }
+</style>
+
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="managerId" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">账号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="managerName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="username" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">年龄</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="age" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">性别</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sex" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">手机号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="phone" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="email" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否启用</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="start" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">创建日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="createDateStr" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+<!--                            lay-submit-->
+                            <button type="submit"  class="layui-btn layui-btn-primary" lay-submit  lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加管理员 </button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除管理员 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+
+        <script type="text/html" id="startTpl">
+            {{#  if(d.start == 1){ }}
+            <span style="color: #999;">已启用</span>
+            {{#  } else if(d.start == 0){ }}
+            <span style="color: #ee715f;">未启用</span>
+            {{#  } }}
+        </script>
+
+    </div>
+</div>
+<script src="lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/public.js" charset="utf-8"></script>
+
+<script>
+
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var tableIns = table.render({
+            elem: '#currentTableId',
+            url: ServerIP+'/rest/agriculture/managerUserController/getManagerUserListAll',
+            method:'post',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {type: "checkbox", width: '3%',align: "center"},
+                {field: 'managerId', width: '10%', title: '编号', sort: true,align: "center"},
+                {field: 'managerName', width: '10%', title: '用户名',align: "center"},
+                {field: 'userName', width: '10%', title: '姓名', sort: true,align: "center"},
+                {field: 'age', width: '17%', title: '年龄',align: "center"},
+                {field: 'sex', width: '10%', title: '性别', sort: true,align: "center"},
+                {field: 'createDateStr', width: '10%', title: '创建日期', sort: true,align: "center"},
+                {width: '10%', title: '是否启用', sort: true,align: "center",templet:"#startTpl"},
+                {title: '操作', width: '20%', toolbar: '#currentTableBar', align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            groups:5,
+            page: true,
+            skin: 'line',
+            first:true,//显示首页
+            last:true,//显示尾页
+            done : function(res, curr, count){
+                console.log("共有数据："+count+" 条")
+                // $('#totalProjectNumber').text("共有数据："+count+" 条");
+                // table_data=res.data;
+                // layer.closeAll('loading');
+                // layer.close(layer.index); //它获取的始终是最新弹出的某个层，值是由layer内部动态递增计算的
+                // layer.close(index);    //返回数据关闭loading
+            }
+            // ,height: $(document).height() - $('#currentTableId').offset().top - 200  //指定table的高度
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //这里以搜索为例
+            tableIns.reload({
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+
+            return false;
+        });
+
+
+        //添加管理员按钮
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['70%', '90%'],
+                    content: 'managerAdminAddAndEdit.html?mark=add',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+
+                $.ajax({
+                    type: "DELETE",
+                    url: ServerIP+"/rest/agriculture/managerUserController/delManagerUserById/"+getSelectTableId(data,"managerId"),
+                    cache: false, //禁用缓存
+                    dataType: "json",
+                    success: function(result){
+
+                        if (result.status==1){
+
+                            layer.msg('删除成功', function () {
+
+                            });
+
+                        }else{
+                            layer.msg('删除失败', function () {
+
+                            });
+                        }
+                    },
+                    error: function(e){
+                        console.log(e)
+                        layer.msg('删除失败'+e, function () {
+                        });
+                    }
+                });
+
+
+            }
+
+            return false;
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+
+                var index = layer.open({
+                    title: '编辑用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['70%', '90%'],
+                    content: 'managerAdminAddAndEdit.html?mark=edit&managerId='+getSelectTableRowId(data,"managerId"),
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+
+                    $.ajax({
+                        type: "DELETE",
+                        url: ServerIP+"/rest/agriculture/managerUserController/delManagerUserById/"+getSelectTableRowId(data,"managerId"),
+                        cache: false, //禁用缓存
+                        dataType: "json",
+                        success: function(result){
+
+                            if (result.status==1){
+
+                                layer.msg('删除成功', function () {
+                                    obj.del();
+                                });
+
+                            }else{
+                                layer.msg('删除失败', function () {
+
+                                });
+                            }
+                        },
+                        error: function(e){
+                            console.log(e)
+                            layer.msg('删除失败'+e, function () {
+                            });
+                        }
+                    });
+
+                    layer.close(index);
+                });
+
+
+
+
+            }
+        });
+
+    });
+
+
+
+</script>
+
+
+
+</body>
+</html>

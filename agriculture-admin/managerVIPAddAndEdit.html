@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加会员信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form" lay-filter="editForm">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">会员用户名</label>
+        <div class="layui-input-block">
+            <input type="text" name="memberUserName" lay-verify="required" lay-reqtext="用户名不能为空"
+                   placeholder="请输入用户名" value="" class="layui-input">
+            <tip style="color: red">用户名是登录的用户名，必须要输入才可登录</tip>
+        </div>
+    </div>
+
+    <div class="layui-form-item class_password">
+        <label class="layui-form-label required">会员登录密码</label>
+        <div class="layui-input-block">
+            <input type="text" name="password" lay-verify="required" lay-reqtext="登录密码不能为空"
+                   placeholder="请输入登录密码" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item class_password">
+        <label class="layui-form-label required">确定登录密码</label>
+        <div class="layui-input-block">
+            <input type="text" name="again_password" lay-verify="required" lay-reqtext="确定登录密码不能为空"
+                   placeholder="请再次输入登录密码" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item ">
+        <label class="layui-form-label required">会员姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="userName" lay-verify="required" lay-reqtext="管理员姓名不能为空"
+                   placeholder="请输入管理员姓名" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label ">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="1" title="男" checked="">
+            <input type="radio" name="sex" value="2" title="女">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">年龄</label>
+        <div class="layui-input-block">
+            <input type="text" name="age"
+                   placeholder="请输入年龄" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label ">手机</label>
+        <div class="layui-input-block">
+            <input type="tel" name="phone" lay-verify="required"
+                   placeholder="请输入手机" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">邮箱</label>
+        <div class="layui-input-block">
+            <input type="email" name="email"
+                   placeholder="请输入邮箱" value="" class="layui-input" lay-reqtext="邮箱不能为空">
+            <tip style="color: red">邮箱做为找回密码的唯一凭证，请认真填写！</tip>
+        </div>
+    </div>
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label">所属区域</label>
+        <div class="layui-input-inline" id="ppppppppp">
+            <select name="province" id="provinceDom" lay-filter="province" lay-verify="required" >
+
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="city" id="cityDom" lay-filter="city" lay-verify="required">
+
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="area" id="areaDom" lay-filter="area" lay-verify="required">
+
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="street" id="streetDom" lay-filter="street" lay-verify="required">
+
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="village" id="villageDom" lay-filter="village" lay-verify="required">
+
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">详细地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="completeAddress"
+                   placeholder="请输入详细地址" value="" class="layui-input" lay-reqtext="邮箱不能为空">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">备注信息</label>
+        <div class="layui-input-block">
+            <textarea name="remarks" class="layui-textarea" placeholder="请输入备注信息"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script src="lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/public.js" charset="utf-8"></script>
+
+<script>
+
+
+
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        var URL  = window.location.href; /* 获取完整URL */
+
+
+        var pagrMark = getWindowURLKey("mark"); //获取URL传递过来的键值对 //此页面的标记 如果是edit则是编辑信息，如果是add则是添加信息
+
+
+        var userId;//如果是编辑，则传递来了userId，则通过此id回显数据
+
+
+        //获取省
+        getProvinceInfoAllList("provinceDom",form);
+        //监听省下拉菜单
+        form.on('select(province)', function (data) {
+            // var message=$("select[name=province]").val();
+            getCityInfoById("provinceDom","cityDom",form);
+        });
+
+        //监听市下拉菜单
+        form.on('select(city)', function (data) {
+            getAreaInfoById("provinceDom","cityDom","areaDom",form);
+        });
+
+        //监听市下拉菜单
+        form.on('select(area)', function (data) {
+            getStreetInfoById("provinceDom","cityDom","areaDom","streetDom",form);
+        });
+
+        form.on('select(street)', function (data) {
+            getVillageInfoById("provinceDom","cityDom","areaDom","streetDom","villageDom",form);
+        });
+
+        //如果是编辑，就先回显数据
+        if(pagrMark=="edit"){
+
+            //隐藏密码输入框 class_password
+
+            $(".class_password").remove();
+
+            userId =  getWindowURLKey("userId");// 如果是编辑，则传递来了userId，则通过此id回显数据
+
+            $.ajax({
+                type: "GET",
+                url: ServerIP+"/rest/agriculture/memberUserController/getMemberUserInfo",
+                cache: false, //禁用缓存
+                data: "userId="+Number(userId),
+                dataType: "json",
+                success: function(result){
+
+                    if (result.data!=null){
+                        form.val('editForm',{
+                            'memberUserName':result.data.memberUserName,
+                            'userName':result.data.userName,
+                            'sex':result.data.sex,
+                            'age':result.data.age,
+                            'phone':result.data.phone,
+                            'email':result.data.email,
+                            'province':result.data.province,
+                            // 'city':result.data.city,
+                            // 'area':result.data.area,
+                            // 'street':result.data.street,
+                            'completeAddress':result.data.completeAddress,
+                            'remarks':result.data.remarks
+                        })
+
+                        //模拟点击省，从而获取市的数据
+                        setTimeout(function () {
+                            $('select[name="province"]').next().find('.layui-anim').children('dd[lay-value="'+result.data.province+'"]').click();
+                        },100);
+
+                        //点击完省之后加载完数据，再填充市
+                        setTimeout(function () {
+                            $("#cityDom").val(result.data.city||result.data.city==""?0:result.data.city);
+                            form.render('select');
+                        },200);
+
+                        //点击市，从而获取县，区数据
+                        setTimeout(function () {
+                            $('select[name="city"]').next().find('.layui-anim').children('dd[lay-value="'+result.data.city+'"]').click();
+                        },300);
+
+                        //填充县区数据
+                        setTimeout(function () {
+                            $("#areaDom").val(result.data.area==null||result.data.area==""?0:result.data.area);
+                            form.render('select');
+                        },400)
+
+
+
+
+                    }else{
+                        //提示完然后跳转到主页
+                        layer.msg('查询失败', function () {
+                        });
+                    }
+                },
+                error: function(e){
+                    console.log(e)
+                }
+            });
+
+
+        }
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            data = data.field;
+            data.userId = userId;
+
+            //如果是编辑，就先回显数据
+            if(pagrMark=="edit"){
+
+                $.ajax({
+                    type: "POST",
+                    url: ServerIP+"/rest/agriculture/memberUserController/editMemberUserInfo",
+                    cache: false, //禁用缓存
+                    data: data,
+                    dataType: "json",
+                    success: function(result){
+
+                        if (result.data!=null){
+
+                            layer.msg('修改成功', function () {
+                                //回显数据
+                            });
+
+                        }else{
+                            layer.msg('修改失败', function () {
+
+                            });
+                        }
+                    },
+                    error: function(e){
+                        console.log(e)
+                    }
+                });
+
+            }else if(pagrMark=="add"){
+
+                if (data.managerName == '' || data.userName == '' || data.email == '' || data.password != data.again_password) {
+                    layer.msg('要求必须输入的信息有问题不能为空，请检查后再试！');
+                    return false;
+                }else{
+
+                    $.ajax({
+                        type: "POST",
+                        url: ServerIP+"/rest/agriculture/managerUserController/addManagerUserInfo",
+                        cache: false, //禁用缓存
+                        data: data,
+                        dataType: "json",
+                        success: function(result){
+
+                            if (result.status==1){
+
+                                layer.msg('添加成功', function () {
+                                    window.location = 'managerAdmin.html';
+                                });
+
+                            }else{
+                                layer.msg('添加失败', function () {
+
+                                });
+
+                            }
+                        },
+                        error: function(e){
+                            console.log(e)
+                            layer.msg('添加失败', function () {
+
+                            });
+
+                        }
+                    });
+                }
+
+            }
+
+
+
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

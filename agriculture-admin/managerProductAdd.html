@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>发布商品</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="css/public.css" media="all">
+
+    <link rel="stylesheet" href="res/editormd/css/editormd.css" />
+
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+
+        .layui-upload-img{
+           width: 120px;
+           height: 120px;
+           margin: 0 10px 10px 0;
+       }
+
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form" lay-filter="editForm">
+
+
+
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>请填写上架商品信息</legend>
+    </fieldset>
+    <form class="layui-form layui-form-pane" action="" id="testForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="productName" lay-verify="required"  autocomplete="off" placeholder="请输入商品名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品价格</label>
+            <div class="layui-input-inline">
+                <input type="number" name="productPrice" lay-verify="required" placeholder="请输入商品价格" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" >
+            <label class="layui-form-label">所属区域</label>
+            <div class="layui-input-inline" id="ppppppppp">
+                <select name="province" id="provinceDom" lay-filter="province" lay-verify="required" >
+
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="city" id="cityDom" lay-filter="city" lay-verify="required">
+
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="area" id="areaDom" lay-filter="area" lay-verify="required">
+
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属分类</label>
+            <div class="layui-input-inline">
+                <select name="productType" id="productType" lay-verify="required">
+                </select>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">是否开售</label>
+            <div class="layui-input-block" >
+                <input type="radio" name="sex" value="0" title="是" checked="">
+                <input type="radio" name="sex" value="1" title="否">
+            </div>
+        </div>
+
+
+    <div class="layui-upload">
+        <button type="button" class="layui-btn" id="test1">上传图片</button>
+        <div class="layui-upload-list">
+<!--            homeDisplayDrawing-->
+            <img class="layui-upload-img" id="homeDisplayDrawing">
+            <p id="demoText"></p>
+        </div>
+    </div>
+
+
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>商品详情展示图</legend>
+    </fieldset>
+
+    <div class="layui-upload">
+        <button type="button" class="layui-btn" id="addDisplayDrawing">上传</button>
+        <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+            预览图：
+            <div class="layui-upload-list" name="displayDrawing" id="displayDrawing"></div>
+        </blockquote>
+    </div>
+
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 100px;">
+        <legend>
+            请填写商品介绍信息
+        </legend>
+    </fieldset>
+
+    <div id="test-editormd">
+<!--        <textarea style="display:none;">[TOC]-->
+<!--# 郑恺苗苗官宣结婚 两人手持结婚证肚子上贴“囍”-->
+<!--![哇哇哇](http://n.sinaimg.cn/ent/4_img/upload/d411fbc6/133/w2000h1333/20200521/6971-itvqccc3122979.jpg)-->
+<!--![哇哇哇](http://n.sinaimg.cn/ent/4_img/upload/d411fbc6/133/w2000h1333/20200521/9900-itvqccc3122988.jpg)-->
+<!--        </textarea>-->
+        <textarea style="display:none;"></textarea>
+    </div>
+
+
+    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn" style="width: 100%">发布商品</button>
+    </form>
+
+
+</div>
+<script src="lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/public.js" charset="utf-8"></script>
+
+<!--<script src="editormd/js/editormd.js"></script>-->
+
+<!--引入js文件-->
+<script src="res/editormd/lib/marked.min.js"></script>
+<script src="res/editormd/lib/prettify.min.js"></script>
+<script src="res/editormd/lib/raphael.min.js"></script>
+<script src="res/editormd/lib/underscore.min.js"></script>
+<script src="res/editormd/lib/sequence-diagram.min.js"></script>
+<script src="res/editormd/lib/flowchart.min.js"></script>
+<script src="res/editormd/lib/jquery.flowchart.min.js"></script>
+<script src="res/editormd/lib/editormd.js"></script>
+
+
+<script>
+
+    layui.use(['form',  'laydate','upload'], function(){
+        var $ = layui.jquery,
+            form = layui.form
+            ,layer = layui.layer
+            ,upload = layui.upload;
+
+
+        //获取省
+        getProvinceInfoAllList("provinceDom",form);
+        //获取分类
+        getSelectMenuData("productType",2,form);
+
+
+
+
+        //监听省下拉菜单
+        form.on('select(province)', function (data) {
+            // var message=$("select[name=province]").val();
+            getCityInfoById("provinceDom","cityDom",form);
+        });
+
+        //监听市下拉菜单
+        form.on('select(city)', function (data) {
+            getAreaInfoById("provinceDom","cityDom","areaDom",form);
+        });
+
+        //初始化Markdown的编辑区
+        var testEditor;
+        testEditor = editormd({
+            id      : "test-editormd",
+            width   : "100%",
+            height  : 640,
+            syncScrolling : "single",
+            path    : "res/editormd/lib/",
+            placeholder : "请填写商品的详细描述信息",
+            emoji:true,
+            /**上传图片相关配置如下*/
+            imageUpload       : true
+            ,imageFormats      : ["jpg", "jpeg", "gif", "png", "bmp", "webp"]
+            ,saveHTMLToTextarea: true//注意：这个配置，方便post提交表单
+            ,crossDomainUpload : true
+            ,imageUploadURL    : ServerIP+"/rest/agriculture/productController/addProductImage"//上传图片的的地址
+            /*,
+            toolbarIcons : function() {
+                // Or return editormd.toolbarModes[name]; // full, simple, mini
+                // Using "||" set icons align right.
+                return ["undo", "redo", "|", "bold", "hr", "|", "preview", "watch", "|", "fullscreen", "info", "testIcon", "testIcon2", "file", "faicon", "||", "watch", "fullscreen", "preview", "testIcon", "file"]
+            },
+            // toolbarIcons : "full", // You can also use editormd.toolbarModes[name] default list, values: full, simple, mini.
+            toolbarIconsClass : {
+                testIcon : "fa-gears"  // 指定一个FontAawsome的图标类
+            },
+            toolbarIconTexts : {
+                testIcon2 : "测试按钮Test button"  // 如果没有图标，则可以这样直接插入内容，可以是字符串或HTML标签
+            },
+
+            // 用于增加自定义工具栏的功能，可以直接插入HTML标签，不使用默认的元素创建图标
+            toolbarCustomIcons : {
+                file   : "<input type=\"file\" accept=\".md\" />",
+                faicon : "<i class=\"fa fa-star\" onclick=\"alert('faicon');\"></i>"
+            },
+
+            // 自定义工具栏按钮的事件处理
+            toolbarHandlers : {
+                /!**
+                 * @param {Object}      cm         CodeMirror对象
+                 * @param {Object}      icon       图标按钮jQuery元素对象
+                 * @param {Object}      cursor     CodeMirror的光标对象，可获取光标所在行和位置
+                 * @param {String}      selection  编辑器选中的文本
+                 *!/
+                testIcon : function(cm, icon, cursor, selection) {
+
+                    //var cursor    = cm.getCursor();     //获取当前光标对象，同cursor参数
+                    //var selection = cm.getSelection();  //获取当前选中的文本，同selection参数
+
+                    // 替换选中文本，如果没有选中文本，则直接插入
+                    cm.replaceSelection("[" + selection + ":testIcon]");
+
+                    // 如果当前没有选中的文本，将光标移到要输入的位置
+                    if(selection === "") {
+                        cm.setCursor(cursor.line, cursor.ch + 1);
+                    }
+
+                    // this == 当前editormd实例
+                    console.log("testIcon =>", this, cm, icon, cursor, selection);
+                },
+
+                testIcon2 : function(cm, icon, cursor, selection) {
+                    cm.replaceSelection("[" + selection + ":testIcon2](" + icon.html() + ")");
+                    console.log("testIcon2 =>", this, icon.html());
+                }
+            },
+
+            lang : {
+                toolbar : {
+                    file : "上传文件",
+                    testIcon : "自定义按钮testIcon",  // 自定义按钮的提示文本，即title属性
+                    testIcon2 : "自定义按钮testIcon2",
+                    undo : "撤销 (Ctrl+Z)"
+                }
+            },
+
+            onload : function(){
+                $("[type=\"file\"]").bind("change", function(){
+                    alert($(this).val());
+                    testEditor.cm.replaceSelection($(this).val());
+                    console.log($(this).val(), testEditor);
+                });
+            }*/
+
+        });
+
+
+
+
+        var pagrMark = getWindowURLKey("mark"); //获取URL传递过来的键值对 //此页面的标记 如果是edit则是编辑信息，如果是add则是添加信息
+        var productId;//如果是编辑，则传递来了managerId，则通过此id回显数据
+
+
+
+        //如果是编辑，就先回显数据
+        if(pagrMark=="edit"){
+            productId =  getWindowURLKey("productId");//获取URL传递过来的键值对
+
+            $.ajax({
+                type: "GET",
+                url: ServerIP+"/rest/agriculture/productController/getProductByIdInfo",
+                cache: false, //禁用缓存
+                data: "productId="+Number(productId),
+                dataType: "json",
+                success: function(result){
+                    if (result.data!=null){
+
+                        //回显其他的数据
+                        form.val('editForm',{
+                            'productName':result.data.productName,
+                            'productPrice':result.data.productPrice
+                            ,'province':result.data.province
+                            ,'productType':result.data.productType
+                        })
+
+                        //模拟点击省，从而获取市的数据
+                        setTimeout(function () {
+                            $('select[name="province"]').next().find('.layui-anim').children('dd[lay-value="'+result.data.province+'"]').click();
+                        },100);
+
+                        //点击完省之后加载完数据，再填充市
+                        setTimeout(function () {
+                            $("#cityDom").val(result.data.city||result.data.city==""?0:result.data.city);
+                            form.render('select');
+                        },200);
+
+                        //点击市，从而获取县，区数据
+                        setTimeout(function () {
+                            $('select[name="city"]').next().find('.layui-anim').children('dd[lay-value="'+result.data.city+'"]').click();
+                        },300);
+
+                        //填充县区数据
+                        setTimeout(function () {
+                            $("#areaDom").val(result.data.area==null||result.data.area==""?0:result.data.area);
+                            form.render('select');
+                        },400)
+
+
+
+
+                        var images = new Array(); //定义一数组
+                        images = result.data.displayDrawings.split(","); //字符分割
+
+                        //回显展示图片
+                        for (let i = 0; i < images.length ; i++) {
+                            $('#displayDrawing').append('<img src="'+ images[i] +'" alt="" class="layui-upload-img">')
+                        }
+
+                        if(result.data.homeDisplayDrawing != null){
+                            $('#homeDisplayDrawing').attr('src',result.data.homeDisplayDrawing);
+                        }
+
+                        //回显介绍数据
+                        $("#test-editormd").find("textarea").html(result.data.introduce);
+
+
+                    }else{
+                        //提示完然后跳转到主页
+                        layer.msg('查询失败', function () {
+                        });
+                    }
+                },
+                error: function(e){
+                    console.log(e)
+                }
+            });
+
+        }
+
+
+        // 监听搜索操作
+        form.on('submit(saveBtn)', function (data) {
+            data = data.field;
+            data.introduce = testEditor.getMarkdown();//获取介绍的信息
+
+
+            //如果是编辑
+            if(pagrMark=="edit"){
+                data.productId = productId;
+
+                $.ajax({
+                    type: "POST",
+                    url: ServerIP+"/rest/agriculture/productController/editProductInfo",
+                    cache: false, //禁用缓存
+                    data: data,
+                    dataType: "json",
+                    success: function(result){
+                        if (result.data!=null){
+                            layer.msg('修改成功', function () {
+                            });
+                        }else{
+                            layer.msg('修改失败', function () {
+                            });
+                        }
+                    },
+                    error: function(e){
+                        console.log(e)
+                    }
+                });
+
+            //如果是添加
+            }else  {
+
+                var imgs = $('#displayDrawing').find("img"); //获取图片的信息
+
+                var homeDisplayDrawing =  $('#homeDisplayDrawing').attr('src');
+
+                data.homeDisplayDrawing = homeDisplayDrawing; //存放首页单张展示图
+                data.images =[];//存放图片
+
+                for (let i = 0; i < imgs.length ; i++) {
+                    data.images.push(imgs[i].currentSrc);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: ServerIP+"/rest/agriculture/productController/addProductInfo",
+                    cache: false, //禁用缓存
+                    data: data,
+                    dataType: "json",
+                    success: function(result){
+                        console.log("保存结果:");
+                        console.log(result);
+
+                        if (result.data!=null){
+                            //提示完然后跳转到主页
+                            layer.msg('保存成功', function () {
+
+                            });
+                        }else{
+                            layer.msg('保存失败', function () {
+
+                            });
+                        }
+                    },
+                    error: function(e){
+                        console.log(e)
+                    }
+                });
+            }
+
+
+            return false;
+        });
+
+
+        //多图片上传
+        upload.render({
+            elem: '#addDisplayDrawing'
+            ,url: 'https://httpbin.org/post' //改成您自己的上传接口
+            ,multiple: true
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#displayDrawing').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
+                });
+            }
+            ,done: function(res){
+                //上传完毕
+            }
+        });
+
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test1'
+            ,url: 'https://httpbin.org/post' //改成您自己的上传接口
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#homeDisplayDrawing').attr('src', result); //图片链接（base64）
+                });
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+
+
+
+    })
+
+
+</script>
+</body>
+</html>

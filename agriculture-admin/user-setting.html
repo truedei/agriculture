@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>修改基本资料</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="css/public.css" media="all">
+    <style>
+        .layui-form-item .layui-input-company {width: auto;padding-right: 10px;line-height: 38px;}
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <div class="layui-form layuimini-form" lay-filter="yonghu-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">管理账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="managerName"  readonly="readonly" lay-verify="required" lay-reqtext="管理账号不能为空" placeholder="请输入管理账号"  value="admin" class="layui-input">
+                    <tip   style="color: red" >管账号不允许更改。</tip>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="userName" lay-verify="required" lay-reqtext="手机不能为空" placeholder="请输入手机"  value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">性别</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sex" lay-verify="required" lay-reqtext="手机不能为空" placeholder="请输入手机"  value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">年龄</label>
+                <div class="layui-input-block">
+                    <input type="number" name="age" lay-verify="required" lay-reqtext="手机不能为空" placeholder="请输入手机"  value="" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">手机号</label>
+                <div class="layui-input-block">
+                    <input type="number" name="phone" lay-verify="required" lay-reqtext="手机不能为空" placeholder="请输入手机"  value="" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮箱</label>
+                <div class="layui-input-block">
+                    <input type="email" name="email"  placeholder="请输入邮箱"  value="" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注信息</label>
+                <div class="layui-input-block">
+                    <textarea name="remarks" class="layui-textarea" placeholder="请输入备注信息"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+
+<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/jquery.cookie.js" charset="utf-8"></script>
+<script src="js/public.js" charset="utf-8"></script>
+
+<script>
+
+    $(function () {
+
+
+    })
+
+    layui.use(['form','miniTab'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            miniTab = layui.miniTab;
+
+        //回显数据
+        getManagerUserInfo(form);
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            data = data.field
+
+            $.ajax({
+                type: "POST",
+                url: ServerIP+"/rest/agriculture/managerUserController/editManagerUserInfo",
+                cache: false, //禁用缓存
+                data: data,
+                dataType: "json",
+                success: function(result){
+
+                    if (result.data!=null){
+
+                        layer.msg('修改成功', function () {
+                            //回显数据
+                            getManagerUserInfo(form);
+                        });
+
+                    }else{
+                        layer.msg('修改失败', function () {
+                        });
+                    }
+                },
+                error: function(e){
+                    console.log(e)
+                }
+            });
+
+
+            return false;
+        });
+
+
+
+
+
+    });
+
+
+    //回显数据
+    function getManagerUserInfo(form) {
+        $.ajax({
+            type: "GET",
+            url: ServerIP+"/rest/agriculture/managerUserController/getManagerUserInfo",
+            cache: false, //禁用缓存
+            data: "managerName="+$.cookie("managerName"),
+            dataType: "json",
+            success: function(result){
+
+                if (result.data!=null){
+                    form.val('yonghu-form',{
+                        'userName':result.data.userName,
+                        'sex':result.data.sex,
+                        'age':result.data.age,
+                        'phone':result.data.phone,
+                        'email':result.data.email,
+                        'remarks':result.data.remarks
+                    })
+                }else{
+                    //提示完然后跳转到主页
+                    layer.msg('查询失败', function () {
+                    });
+                }
+            },
+            error: function(e){
+                console.log(e)
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>

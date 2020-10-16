@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="css/public.css" media="all">
+</head>
+
+<style>
+    #layui-table-page1{
+        text-align: center;
+    }
+</style>
+
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">商品ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="productId" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">商品名字</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="productName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 发布商品 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script src="lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/public.js" charset="utf-8"></script>
+
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var tableIns = table.render({
+            elem: '#currentTableId',
+            url: ServerIP+"/rest/agriculture/productController/getProductListAll",
+            method:'POST',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {type: "checkbox", width: '4%', align: "center"},
+                {field: 'productId', width: '9%', title: 'ID', sort: true, align: "center"},
+                {field: 'productName', width: '13%', title: '商品名', align: "center"},
+                {field: 'productPrice', width: '7%', title: '售价(元)', sort: true, align: "center"},
+                {field: 'fixtureNumber', width: '10%', title: '成交数', align: "center"},
+                {field: 'turnover', title: '成交额', width: '8%', align: "center"},
+                {field: 'likes', width: '10%', title: '喜欢数', sort: true, align: "center"},
+                {field: 'favnum', width: '9%', title: '收藏数', sort: true, align: "center"},
+                {field: 'onSale', width: '10%', title: '是否在卖', align: "center"},
+                {field: 'rank', width: '10%', title: '排行榜', sort: true, align: "center"},
+                {title: '操作', width: '10%', toolbar: '#currentTableBar', align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: true,
+            skin: 'line'
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+
+            //重载表格数据
+            tableIns.reload({
+                where: data.field //条件
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '发布商品',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'managerProductAdd.html?mark=add',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+
+                $.ajax({
+                    type: "DELETE",
+                    url: ServerIP+"/rest/agriculture/productController/delProductById/"+getSelectTableId(data,"productId"),
+                    cache: false, //禁用缓存
+                    dataType: "json",
+                    success: function(result){
+
+                        if (result.status==1){
+
+                            layer.msg('删除成功', function () {
+
+                            });
+
+                        }else{
+                            layer.msg('删除失败', function () {
+
+                            });
+                        }
+                    },
+                    error: function(e){
+                        console.log(e)
+                        layer.msg('删除失败'+e.message, function () {
+                        });
+                    }
+                });
+
+
+            }
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+
+                var index = layer.open({
+                    title: '编辑商品信息',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'managerProductAdd.html?mark=edit&productId='+getSelectTableRowId(data,"productId"),
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+
+                    $.ajax({
+                        type: "DELETE",
+                        url: ServerIP+"/rest/agriculture/productController/delProductById/"+getSelectTableRowId(data,"productId"),
+                        cache: false, //禁用缓存
+                        dataType: "json",
+                        success: function(result){
+
+                            if (result.status==1){
+
+                                layer.msg('删除成功', function () {
+                                    obj.del();
+                                });
+
+                            }else{
+                                layer.msg('删除失败', function () {
+
+                                });
+                            }
+                        },
+                        error: function(e){
+                            console.log(e)
+                            layer.msg('删除失败'+e, function () {
+                            });
+                        }
+                    });
+
+
+                    layer.close(index);
+
+
+                });
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 1000,
+  "data": [
+    {
+      "id": 10000,
+      "username": "admin",
+      "sex": "女",
+      "remark": "这是一个管理员，新建的",
+      "power": "超级管理员",
+      "createDate": "2020/5/12",
+      "start": "是"
+    }
+  ]
+}

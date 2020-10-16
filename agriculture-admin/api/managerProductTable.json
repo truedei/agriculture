@@ -1,0 +1,19 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 1000,
+  "data": [
+    {
+      "id": 10000,
+      "username": "白菜",
+      "sex": 1.32,
+      "city": 158,
+      "sign": 250,
+      "experience": 255,
+      "logins": 24,
+      "wealth": "是",
+      "classify": 1,
+      "score": 57
+    }
+  ]
+}
