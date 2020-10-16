@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.agriculture.dao.ShippingAddressDao">
+  <resultMap id="BaseResultMap" type="cn.agriculture.entity.ShippingAddress">
+      <id column="SHIPPING_ADDRESS_ID" property="shippingAddressId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="USER_ID" property="userId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="USER_NAME" property="userName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="MOBILE_PHONE" property="mobilePhone" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="PROVINCE" property="province" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="CITY" property="city" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="AREA" property="area" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="STREET" property="street" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="COMPLETE_ADDRESS" property="completeAddress" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="REMARKS" property="remarks" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="CREATE_DATE" property="createDate" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+<!--      <result column="CREATE_DATE" property="createDateStr" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+    <result column="createDateStr" property="createDateStr" javaType="java.lang.String" jdbcType="VARCHAR" />
+    <result column="DEFAULT_ADDRESS" property="defaultAddress" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="address" property="address" javaType="java.lang.String" jdbcType="VARCHAR"></result>
+  </resultMap>
+  <sql id="Base_Column_List">
+    SHIPPING_ADDRESS_ID, USER_ID, USER_NAME, MOBILE_PHONE, PROVINCE, CITY, AREA, STREET,
+    COMPLETE_ADDRESS, REMARKS, CREATE_DATE as createDateStr,DEFAULT_ADDRESS
+  </sql>
+
+    <insert id="addShippingAddress" parameterType="cn.agriculture.entity.ShippingAddress">
+        insert into shipping_address
+        (user_id,
+        user_name,
+        mobile_phone,
+        province,
+        city,
+        area,
+        street,
+        complete_address,
+        remarks)
+
+        values(
+        #{userId},
+        #{userName},
+        #{mobilePhone},
+        #{province},
+        #{city},
+        #{area},
+        #{street},
+        #{completeAddress},
+        #{remarks})
+
+    </insert>
+
+    <update id="editShippingAddressInfo" parameterType="cn.agriculture.entity.ShippingAddress">
+        update shipping_address
+        <set>
+            <if test="userName != null">
+                USER_NAME = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="mobilePhone != null">
+                MOBILE_PHONE = #{mobilePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                PROVINCE = #{province,jdbcType=INTEGER},
+            </if>
+            <if test="city != null">
+                CITY = #{city,jdbcType=INTEGER},
+            </if>
+            <if test="area != null">
+                AREA = #{area,jdbcType=INTEGER},
+            </if>
+            <if test="completeAddress != null">
+                COMPLETE_ADDRESS = #{completeAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null">
+                REMARKS = #{remarks,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where SHIPPING_ADDRESS_ID = #{shippingAddressId,jdbcType=INTEGER}
+        and USER_ID = #{userId,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteShippingAddressById">
+       delete from shipping_address
+        where
+          SHIPPING_ADDRESS_ID = #{shippingAddressId}
+          and USER_ID = #{userId}
+    </delete>
+
+    <select id="getShippingAddressInfo" resultMap="BaseResultMap" parameterType="cn.agriculture.entity.ShippingAddress">
+      select
+      <include refid="Base_Column_List" />
+        ,CONCAT(pro.province_name,'-', ci.city_name,'-',ar.area_name ,'-', COMPLETE_ADDRESS) address
+
+      from shipping_address
+      join province pro on  pro.province_code=province
+      join city ci on ci.city_code=city
+      join area ar on ar.area_code=area
+
+
+      <where>
+        <if test="userId!=null and userId!=''">
+          and USER_ID = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="shippingAddressId!=null and shippingAddressId!=''">
+          and SHIPPING_ADDRESS_ID = #{shippingAddressId,jdbcType=INTEGER}
+        </if>
+      </where>
+    </select>
+
+    <select id="getShippingAddressInfoById" resultType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List" />
+        from shipping_address
+        <where>
+            <if test="userId!=null and userId!=''">
+                and USER_ID = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="shippingAddressId!=null and shippingAddressId!=''">
+                and SHIPPING_ADDRESS_ID = #{shippingAddressId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+</mapper>

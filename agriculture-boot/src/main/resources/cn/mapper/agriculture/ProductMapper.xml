@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.agriculture.dao.ProductDao">
+  <resultMap id="BaseResultMap" type="cn.agriculture.entity.Product">
+      <id column="PRODUCT_ID" property="productId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="PRODUCT_NAME" property="productName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="PRODUCT_PRICE" property="productPrice" javaType="java.lang.Double" jdbcType="DOUBLE" />
+      <result column="FIXTURE_NUMBER" property="fixtureNumber" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="TURNOVER" property="turnover" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="LIKES" property="likes" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="FAVNUM" property="favnum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="COMMENTS" property="comments" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="ON_SALE" property="onSale" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="RANK" property="rank" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="PRODUCT_TYPE" property="productType" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="PROVINCE" property="province" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="CITY" property="city" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="AREA" property="area" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="INTRODUCE" property="introduce" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="DISPLAY_DRAWING" property="displayDrawings" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="HOME_DISPLAY_DRAWING" property="homeDisplayDrawing" javaType="java.lang.String" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    PRODUCT_ID, PRODUCT_NAME, PRODUCT_PRICE, FIXTURE_NUMBER, TURNOVER, LIKES, FAVNUM, 
+    COMMENTS, ON_SALE, RANK, PRODUCT_TYPE, PROVINCE, CITY, AREA,INTRODUCE,DISPLAY_DRAWING,HOME_DISPLAY_DRAWING
+  </sql>
+
+
+
+  <insert id="uploadImages" parameterType="cn.agriculture.entity.Product">
+
+     insert into product (
+        PRODUCT_NAME,
+        PRODUCT_PRICE,
+        FIXTURE_NUMBER,
+        TURNOVER,
+        LIKES,
+        FAVNUM,
+        COMMENTS,
+        ON_SALE,
+        RANK,
+        PRODUCT_TYPE,
+        PROVINCE,
+        CITY,
+        AREA,
+        INTRODUCE,
+        DISPLAY_DRAWING,
+        HOME_DISPLAY_DRAWING
+
+      ) values (
+        #{productName},
+        #{productPrice},
+        #{fixtureNumber},
+        #{turnover},
+        #{likes},
+        #{favnum},
+        #{comments},
+        #{onSale},
+        #{rank},
+        #{productType},
+        #{province},
+        #{city},
+        #{area},
+        #{introduce},
+        #{displayDrawings},
+        #{homeDisplayDrawing}
+      )
+
+  </insert>
+
+    <update id="addProductFixtureNumber">
+         update product set FIXTURE_NUMBER=FIXTURE_NUMBER+1 where PRODUCT_ID=#{productId}
+    </update>
+
+    <update id="editProductInfo" parameterType="cn.agriculture.entity.Product">
+        update product set
+        PRODUCT_NAME = #{productName},
+        PRODUCT_PRICE = #{productPrice},
+
+        PROVINCE = #{province},
+        CITY = #{city},
+        AREA = #{area},
+
+        PRODUCT_TYPE = #{productType},
+
+        INTRODUCE = #{introduce}
+
+        <where>
+            <if test="productId != null and productId!=''">
+                AND PRODUCT_ID = #{productId}
+            </if>
+        </where>
+
+    </update>
+
+    <delete id="delProductById">
+        delete from product
+        <where>
+            <if test="productIdStr != null and productIdStr!=''">
+                AND PRODUCT_ID IN (${productIdStr})
+            </if>
+        </where>
+    </delete>
+
+    <select id="getProductListAll" resultType="cn.agriculture.entity.Product">
+        select
+        <include refid="Base_Column_List" />
+        from product
+        <where>
+            <if test="productId != null and productId!=''">
+                AND PRODUCT_ID = #{productId}
+            </if>
+            <if test="productName != null  and productName != ''">
+                AND PRODUCT_NAME = #{productName}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getProductInfo" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List" />
+        from product
+        where PRODUCT_ID = #{productId}
+    </select>
+
+    <select id="getProductByHotInfo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from product where ON_SALE=1 order by  FIXTURE_NUMBER desc limit 4
+    </select>
+    <select id="getProductByNewTimeInfo" resultType="cn.agriculture.entity.Product">
+        select
+        <include refid="Base_Column_List" />
+        from product where ON_SALE=1 order by  POST_TIME desc limit 4
+    </select>
+    <select id="getProductByConditionInfoList" resultType="cn.agriculture.entity.Product">
+        select
+        <include refid="Base_Column_List" />
+        from product
+        <where>
+        <if test="productName != null  and productName != ''">
+            AND PRODUCT_NAME like concat('%',#{productName},'%')
+        </if>
+        <if test="province != null  and province != ''">
+            AND PROVINCE = #{province}
+        </if>
+        <if test="city != null  and city != ''">
+            AND CITY = #{city}
+        </if>
+        <if test="area != null  and area != ''">
+            AND AREA = #{area}
+        </if>
+
+        <if test="typeSql != null  and typeSql != ''">
+            AND  ${typeSql}
+        </if>
+
+        </where>
+
+        <if test="orderSql != null  and orderSql != ''">
+              ${orderSql}
+        </if>
+    </select>
+
+    <select id="getProductList" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List" />
+        from product
+        where PRODUCT_ID IN (${sqlId})
+    </select>
+
+
+</mapper>

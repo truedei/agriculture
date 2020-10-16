@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.agriculture.dao.ManagerUserDao">
+
+  <resultMap id="BaseResultMap" type="cn.agriculture.entity.ManagerUser">
+      <id column="MANAGER_ID" property="managerId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="MANAGER_NAME" property="managerName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="PASSWORD" property="password" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="USER_NAME" property="userName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="SEX" property="sex" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="AGE" property="age" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="PHONE" property="phone" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="EMAIL" property="email" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="START" property="start" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="CREATE_DATE" property="createDate" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="POWER"  property="power" javaType="java.lang.String" jdbcType="CHAR" />
+      <result column="REMARKS" property="remarks" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="createDateStr" property="createDateStr" javaType="java.lang.String" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    MANAGER_ID, MANAGER_NAME, PASSWORD, USER_NAME, SEX, AGE, PHONE, EMAIL, START, CREATE_DATE, 
+    POWER, REMARKS
+  </sql>
+
+
+  <insert id="insert" parameterType="cn.agriculture.entity.ManagerUser">
+    insert into manager_user (USER_NAME)
+    values (#{userName})
+  </insert>
+
+    <insert id="addManagerUserInfo" parameterType="cn.agriculture.entity.ManagerUser">
+        insert into manager_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="managerName != null">
+                MANAGER_NAME,
+            </if>
+            <if test="password != null">
+                PASSWORD,
+            </if>
+            <if test="userName != null">
+                USER_NAME,
+            </if>
+            <if test="sex != null">
+                SEX,
+            </if>
+            <if test="age != null">
+                AGE,
+            </if>
+            <if test="phone != null">
+                PHONE,
+            </if>
+            <if test="email != null">
+                EMAIL,
+            </if>
+            <if test="start != null">
+                START,
+            </if>
+            <if test="createDate != null">
+                CREATE_DATE,
+            </if>
+            <if test="power != null">
+                POWER,
+            </if>
+            <if test="remarks != null">
+                REMARKS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="managerName != null">
+                #{managerName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="age != null">
+                #{age,jdbcType=INTEGER},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="start != null">
+                #{start,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="power != null">
+                #{power,jdbcType=INTEGER},
+            </if>
+            <if test="remarks != null">
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="editOldPassword" parameterType="cn.agriculture.entity.ManagerUser">
+        UPDATE manager_user SET PASSWORD=#{password} where MANAGER_NAME=#{managerName}
+  </update>
+
+<!--         SET USER_NAME=#{userName},SEX=#{sex},AGE=#{age},PHONE=#{phone},EMAIL=#{email},REMARKS=#{remarks}-->
+    <update id="editManagerUserInfo" parameterType="cn.agriculture.entity.ManagerUser">
+        UPDATE manager_user  set
+
+                    USER_NAME=#{userName},
+                    SEX=#{sex},
+                    AGE=#{age},
+                    PHONE=#{phone},
+                    EMAIL=#{email},
+                    REMARKS=#{remarks},
+                    POWER=#{power},
+                    START=#{start}
+            <where>
+                <if test="managerId != null and managerId!=''">
+                    AND MANAGER_ID = #{managerId}
+                </if>
+                <if test="managerName != null  and managerName!=''">
+                    AND MANAGER_NAME = #{managerName}
+                </if>
+            </where>
+    </update>
+
+    <delete id="delManagerUserById" parameterType="java.lang.Integer">
+        delete from manager_user where MANAGER_ID IN (${managerIdStr})
+    </delete>
+
+    <!--  -->
+  <select id="login"  resultMap="BaseResultMap" parameterType="cn.agriculture.entity.ManagerUser" >
+     select mu.*,mu.CREATE_DATE as createDateStr from manager_user mu where mu.MANAGER_NAME=#{managerName} and mu.PASSWORD=#{password}
+  </select>
+
+    <select id="getManagerUserInfo" resultMap="BaseResultMap" parameterType="cn.agriculture.entity.ManagerUser">
+        select  mu.* from manager_user mu
+        <where>
+            <if test="managerId != null and managerId!=''">
+                AND mu.MANAGER_ID = #{managerId}
+            </if>
+            <if test="managerName != null  and managerName!=''">
+                AND mu.MANAGER_NAME = #{managerName}
+            </if>
+            <if test="userName != null and userName != '' ">
+                AND mu.USER_NAME = #{userName}
+            </if>
+        </where>
+    </select>
+
+    <select id="getManagerUserListAll" resultMap="BaseResultMap" parameterType="cn.agriculture.entity.ManagerUser">
+
+        select
+            mu.MANAGER_ID,
+            mu.MANAGER_NAME ,
+            mu.USER_NAME ,
+            mu.SEX ,
+            mu.AGE ,
+            mu.PHONE ,
+            mu.EMAIL ,
+            mu.START ,
+            mu.CREATE_DATE as createDateStr
+         from manager_user mu
+
+        <where>
+            <if test="managerId != null and managerId!=''">
+                AND mu.MANAGER_ID = #{managerId}
+            </if>
+            <if test="managerName != null  and managerName!=''">
+                AND mu.MANAGER_NAME = #{managerName}
+            </if>
+
+             <if test="userName != null and userName != '' ">
+                 AND mu.USER_NAME = #{userName}
+             </if>
+             <if test="sex != null and sex != ''">
+                 AND mu.SEX = #{sex}
+             </if>
+             <if test="age != null and age != ''">
+                 AND mu.AGE = #{age}
+             </if>
+             <if test="phone != null and phone != ''">
+                 AND mu.PHONE = #{phone}
+             </if>
+             <if test="email != null and email != ''">
+                 AND mu.EMAIL = #{email}
+             </if>
+             <if test="start != null and start != ''">
+                 AND mu.START = #{start}
+             </if>
+             <if test="createDateStr != null and createDateStr != ''">
+                 AND mu.CREATE_DATE = #{createDateStr}
+             </if>
+
+        </where>
+    </select>
+
+</mapper>

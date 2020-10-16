@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.agriculture.dao.SysConfigDao">
+
+    <resultMap id="BaseResultMap" type="cn.agriculture.entity.SysConfig">
+        <id column="CONFIG_ID" property="configId" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result column="CONFIG_NAME" property="configName" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result column="SUB_ID" property="subId" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result column="SUB_NAME" property="subName" javaType="java.lang.String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <insert id="addSysConfigInfo" parameterType="cn.agriculture.entity.SysConfig">
+        INSERT into sys_config(CONFIG_ID,CONFIG_NAME) values(#{configId},#{configName})
+    </insert>
+    <insert id="addSysSubConfigInfo" parameterType="cn.agriculture.entity.SysConfig">
+        INSERT into sys_sub_config(CONFIG_ID,SUB_ID,SUB_NAME) values(#{configId},#{subId},#{subName})
+    </insert>
+
+    <update id="editSysConfigInfoById" parameterType="cn.agriculture.entity.SysConfig">
+        update  sys_config set CONFIG_NAME=#{configName} where  CONFIG_ID=#{configId}
+    </update>
+
+    <update id="editSysSubConfigInfo">
+        update  sys_sub_config set SUB_NAME=#{subName} where  CONFIG_ID=#{configId} and SUB_ID IN (${subId})
+    </update>
+
+    <delete id="delSysConfigInfoById" parameterType="cn.agriculture.entity.SysConfig">
+        delete from sys_config where  CONFIG_ID IN (${configIdStr});
+        delete from sys_sub_config where  CONFIG_ID IN (${configIdStr});
+    </delete>
+
+    <delete id="delSysSubConfigInfoById">
+         delete from sys_sub_config  where  CONFIG_ID=#{configId} and SUB_ID IN (${subIdStr})
+    </delete>
+
+    <select id="getSysConfigInfoById" resultMap="BaseResultMap" parameterType="cn.agriculture.entity.SysConfig">
+        select * from sys_config where CONFIG_ID = #{configId}
+    </select>
+
+    <select id="getSysConfigInfoPageList" resultMap="BaseResultMap">
+        select
+        sc.CONFIG_ID,
+        sc.CONFIG_NAME
+        from
+        sys_config sc
+
+        <where>
+            <if test="configId!=null and configId!=''">
+               and sc.CONFIG_ID = #{configId}
+            </if>
+            <if test="configName!=null and configName!=''">
+              and sc.CONFIG_NAME = #{configName}
+            </if>
+        </where>
+    </select>
+
+    <select id="getSysSubConfigInfoPageList" parameterType="cn.agriculture.entity.SysConfig" resultMap="BaseResultMap">
+        select
+        sc.CONFIG_ID, sc.CONFIG_NAME,ssc.SUB_ID, ssc.SUB_NAME
+        from
+        sys_config sc join sys_sub_config ssc on sc.CONFIG_ID=ssc.CONFIG_ID
+
+        <where>
+             sc.CONFIG_ID = #{configId}
+            <if test="subId!=null and subId!=''">
+                and ssc.SUB_ID = #{subId}
+            </if>
+            <if test="subName!=null and subName!=''">
+                and ssc.SUB_NAME = #{subName}
+            </if>
+        </where>
+    </select>
+    <select id="getSysSubConfigInfo" resultMap="BaseResultMap" parameterType="cn.agriculture.entity.SysConfig">
+     select
+        sc.CONFIG_ID, sc.CONFIG_NAME,
+        ssc.SUB_ID, ssc.SUB_NAME
+        from
+        sys_config sc join sys_sub_config ssc on sc.CONFIG_ID=ssc.CONFIG_ID
+             where sc.CONFIG_ID = #{configId} and ssc.SUB_ID = #{subId}
+    </select>
+
+    <select id="getProvinceInfoAllList" resultType="cn.agriculture.entity.Province">
+        select
+        province_code as provinceCode,
+        province_name  as provinceName
+        from province
+    </select>
+
+    <select id="getCityInfoById" resultType="cn.agriculture.entity.City">
+
+        select
+        city_code as cityCode,
+        city_name as cityName,
+        province_code as provinceCode
+        from city
+        where
+        province_code=#{provinceCode}
+
+    </select>
+
+    <select id="getAreaInfoById" resultType="cn.agriculture.entity.Area">
+        select
+            a.area_code as areaCode,
+            a.area_name as areaName,
+            a.city_code as cityCode,
+            a.province_code as provinceCode
+        from area a
+        where
+        a.province_code=#{provinceCode} and a.city_code=#{cityCode}
+
+    </select>
+
+    <select id="getStreetInfoById" resultType="cn.agriculture.entity.Street">
+        select
+            street_code  as streetCode,
+            street_name as streetName,
+            area_code as areaCode,
+            province_code as provinceCode,
+            city_code as cityCode
+
+        from  street
+        where
+            province_code=#{provinceCode}
+            and city_code=#{cityCode}
+            and area_code=#{areaCode}
+    </select>
+
+    <select id="getVillageInfoById" resultType="cn.agriculture.entity.Village">
+        select
+            village_code as villageCode,
+            village_name as villageName,
+            street_code as streetCode,
+            province_code as provinceCode,
+            city_code as cityCode,
+            area_code as areaCode
+        from  village
+        where
+            province_code=#{provinceCode}
+            and city_code=#{cityCode}
+            and area_code=#{areaCode}
+            and street_code=#{streetCode}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.agriculture.dao.MemberUserDao">
+  <resultMap id="BaseResultMap" type="cn.agriculture.entity.MemberUser">
+      <id column="USER_ID" property="userId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="MEMBER_USER_NAME" property="memberUserName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="USER_NAME" property="userName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="PASSWORD" property="password" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="SEX" property="sex" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="AGE" property="age" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="PHONE" property="phone" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="EMAIL" property="email" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="PROVINCE" property="province" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="CITY" property="city" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="AREA" property="area" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="STREET" property="street" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="COMPLETE_ADDRESS" property="completeAddress" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="CREATE_DATE" property="createDate" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="VIOLATION" property="violation" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="REMARKS" property="remarks" javaType="java.lang.String" jdbcType="VARCHAR" />
+
+      <result column="provinceStr" property="provinceStr" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="cityStr" property="cityStr" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="areaStr" property="areaStr" javaType="java.lang.String" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    USER_ID, MEMBER_USER_NAME, USER_NAME, PASSWORD, SEX, AGE, PHONE, EMAIL, PROVINCE,
+    CITY, AREA, STREET, COMPLETE_ADDRESS, CREATE_DATE, VIOLATION, REMARKS
+  </sql>
+
+  <insert id="addMemberUserInfo" parameterType="cn.agriculture.entity.MemberUser" useGeneratedKeys="true" keyProperty="userId" keyColumn="USER_ID">
+        insert into member_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="memberUserName != null">
+            MEMBER_USER_NAME,
+          </if>
+          <if test="userName != null">
+            USER_NAME,
+          </if>
+          <if test="password != null">
+            PASSWORD,
+          </if>
+          <if test="sex != null">
+            SEX,
+          </if>
+          <if test="age != null">
+            AGE,
+          </if>
+          <if test="phone != null">
+            PHONE,
+          </if>
+          <if test="email != null">
+            EMAIL,
+          </if>
+          <if test="province != null">
+            PROVINCE,
+          </if>
+          <if test="city != null">
+            CITY,
+          </if>
+          <if test="area != null">
+              AREA,
+          </if>
+          <if test="street != null">
+            STREET,
+          </if>
+          <if test="completeAddress != null">
+            COMPLETE_ADDRESS,
+          </if>
+          <if test="createDate != null">
+            CREATE_DATE,
+          </if>
+          <if test="violation != null">
+            VIOLATION,
+          </if>
+          <if test="remarks != null">
+            REMARKS,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="memberUserName != null">
+            #{memberUserName,jdbcType=VARCHAR},
+          </if>
+          <if test="userName != null">
+            #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="password != null">
+            #{password,jdbcType=VARCHAR},
+          </if>
+          <if test="sex != null">
+            #{sex,jdbcType=CHAR},
+          </if>
+          <if test="age != null">
+            #{age,jdbcType=INTEGER},
+          </if>
+          <if test="phone != null">
+            #{phone,jdbcType=VARCHAR},
+          </if>
+          <if test="email != null">
+            #{email,jdbcType=VARCHAR},
+          </if>
+          <if test="province != null">
+            #{province,jdbcType=INTEGER},
+          </if>
+          <if test="city != null">
+            #{city,jdbcType=INTEGER},
+          </if>
+          <if test="area != null">
+            #{area,jdbcType=INTEGER},
+          </if>
+          <if test="street != null">
+            #{street,jdbcType=VARCHAR},
+          </if>
+          <if test="completeAddress != null">
+            #{completeAddress,jdbcType=VARCHAR},
+          </if>
+          <if test="createDate != null">
+            #{createDate,jdbcType=TIMESTAMP},
+          </if>
+          <if test="violation != null">
+            #{violation,jdbcType=INTEGER},
+          </if>
+          <if test="remarks != null">
+            #{remarks,jdbcType=VARCHAR},
+          </if>
+        </trim>
+  </insert>
+
+  <update id="editOldPassword" parameterType="cn.agriculture.entity.MemberUser">
+        update member_user set  PASSWORD=#{password}
+        <where>
+          <if test="userId != null and userId!=''">
+            AND USER_ID = #{userId}
+          </if>
+          <if test="memberUserName != null  and memberUserName!=''">
+            AND MEMBER_USER_NAME = #{memberUserName}
+          </if>
+          <if test="userName != null  and userName!=''">
+            AND USER_NAME = #{userName}
+          </if>
+        </where>
+  </update>
+
+  <update id="editMemberUserInfo">
+        update member_user set
+            USER_NAME = #{userName},
+            SEX = #{sex},
+            AGE = #{age},
+            PHONE = #{phone},
+            EMAIL = #{email},
+            PROVINCE = #{province},
+            CITY = #{city},
+            AREA = #{area},
+            STREET = #{street},
+            COMPLETE_ADDRESS = #{completeAddress},
+            CREATE_DATE = #{createDate},
+            VIOLATION = #{violation},
+            REMARKS = #{remarks}
+        <where>
+          <if test="userId != null and userId!=''">
+            AND USER_ID = #{userId,jdbcType=INTEGER}
+          </if>
+          <if test="memberUserName != null  and memberUserName != ''">
+            and MEMBER_USER_NAME = #{memberUserName,jdbcType=VARCHAR}
+          </if>
+        </where>
+  </update>
+
+  <delete id="delMemberUserById">
+      delete from member_user
+      <where>
+        <if test="userIdStr != null and userIdStr!=''">
+          AND USER_ID IN (${userIdStr})
+        </if>
+      </where>
+  </delete>
+
+
+
+  <select id="loginMemberUser" resultMap="BaseResultMap" parameterType="cn.agriculture.entity.MemberUser">
+    select USER_ID from member_user where MEMBER_USER_NAME = #{memberUserName} and  PASSWORD = #{password}
+  </select>
+
+  <sql id="sqlMemberUserInfo">
+    USER_ID, MEMBER_USER_NAME, USER_NAME, SEX, AGE, PHONE, EMAIL, PROVINCE,
+    CITY, AREA, STREET, COMPLETE_ADDRESS, CREATE_DATE, VIOLATION, REMARKS,CREATE_DATE  as createDateStr
+
+  </sql>
+
+<!--    where USER_ID = #{userId,jdbcType=INTEGER}-->
+
+  <select id="getMemberUserInfo" resultType="cn.agriculture.entity.MemberUser">
+    select
+    <include refid="sqlMemberUserInfo" />
+
+    from member_user
+    <where>
+        <if test="userId!=null and userId!=''">
+            USER_ID = #{userId}
+        </if>
+        <if test="memberUserName != null  and memberUserName!=''">
+             MEMBER_USER_NAME = #{memberUserName}
+        </if>
+    </where>
+
+  </select>
+
+<!--    resultType="cn.agriculture.entity.MemberUser"-->
+    <!--    <include refid="sqlMemberUserInfo" />-->
+
+    <select id="getMemberUserListAll" resultMap="BaseResultMap" >
+      select
+        <include refid="sqlMemberUserInfo" />,
+      mu.CREATE_DATE as createDateStr,
+      pro.province_name as provinceStr,
+      ci.city_name as cityStr,
+      ar.area_name as areaStr
+
+      from member_user mu
+
+        left join province pro on mu.PROVINCE=pro.province_code
+
+        left join city ci on mu.CITY = ci.city_code
+
+        left join area ar on mu.AREA = ar.area_code
+
+
+    <where>
+      <if test="userId != null and userId!=''">
+        AND mu.USER_ID = #{userId}
+      </if>
+      <if test="memberUserName != null  and memberUserName != ''">
+        AND mu.MEMBER_USER_NAME = #{memberUserName}
+      </if>
+      <if test="email != null  and email != ''">
+        AND mu.EMAIL = #{email}
+      </if>
+      <if test="userName != null  and userName != ''">
+        AND mu.USER_NAME = #{userName}
+      </if>
+    </where>
+  </select>
+
+
+
+</mapper>
