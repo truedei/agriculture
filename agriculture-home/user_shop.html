@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>农乐城-购物车</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="stylesheet" href="res/layui/css/layui.css">
+  <link rel="stylesheet" href="res/static/css/index.css">
+  <link rel="stylesheet" href="res/editor.md-master/css/editormd.css" />
+
+</head>
+<body>
+
+
+<div class="layui-container house-usershop">
+  <table id="house-usershop-table" lay-filter="house-usershop-table">
+
+  </table>
+
+  <div class="house-usershop-table-num layui-form">
+    <form class="layui-form layui-form-pane" action="">
+      <input type="checkbox" lay-skin="primary"><span class="numal">已选 0 件</span>
+      <a id="batchDel">批量删除</a>
+      <p id="total">合计: ￥<span>0.00</span></p>
+      <div id="toCope">
+        <p>应付：<big>￥0.00</big></p>
+        <span>满减￥20，包邮</span>
+      </div>
+      <button type="button" class="layui-btn"  lay-submit lay-filter="data-search-btn">结算</button>
+    </form>
+  </div>
+
+  <p>猜您喜欢</p>
+  <ul class="house-usershop-like" id="guessYouLike">
+
+   <!-- <li>
+      <a href="detail.html">
+        <div><img src="res/static/img/paging_img5.jpg"></div>
+        <p>可爱小瓷杯子</p>
+        <p class="price">￥200</p>
+      </a>
+    </li>
+
+    <li>
+      <a href="detail.html">
+        <div><img src="res/static/img/paging_img5.jpg"></div>
+        <p>可爱小瓷杯子</p>
+        <p class="price">￥200</p>
+      </a>
+    </li>
+
+    <li>
+      <a href="detail.html">
+        <div><img src="res/static/img/paging_img5.jpg"></div>
+        <p>可爱小瓷杯子</p>
+        <p class="price">￥200</p>
+      </a>
+    </li>-->
+
+  </ul>
+</div>
+
+<!--商品模板-->
+<script type="text/html" id="goodsTpl">
+  <div>
+    <input class="productId" hidden value="{{d.productId}}">
+    <input class="shoppingCartNo" hidden value="{{d.shoppingCartNo}}">
+
+    <img src="{{d.homeDisplayDrawing}}">
+      <div style="display: inline-block; text-align: left; vertical-align: top;">
+        <p>
+          <a href="detail.html?productId={{d.productId}}">
+            {{d.productName}}
+          </a>
+        </p>
+      </div>
+<!--      <p>{{d.color}}  {{d.wattage}}</p>-->
+  </div>
+</script>
+
+<!--单价模板-->
+<script type="text/html" id="priceTpl">
+  <p>￥<span class="price">{{d.productPrice}}</span><del>￥{{d.productPrice}}</del></p>
+</script>
+
+<!--数量模板-->
+<script type="text/html" id="numTpl">
+  <div class="numVal">
+    <button class="layui-btn layui-btn-primary sup" lay-event="sup">-</button>
+    <input type="text" class="layui-input" value="{{d.amount}}">
+    <button class="layui-btn layui-btn-primary sub" lay-event="sub">+</button>
+  </div>
+</script>
+
+<!--小计模板-->
+<script type="text/html" id="totalTpl">
+  <span class="total" style="color: #cd2d15;">￥{{(d.productPrice*d.amount).toFixed(2)}}</span>
+</script>
+
+<!--操作模板-->
+<script type="text/html" id="shopTpl">
+  <a lay-event="del">删除</a>
+</script>
+
+<script src="res/layui/layui.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<script src="res/static/js/html5.min.js"></script>
+<script src="res/static/js/respond.min.js"></script>
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+
+<script>
+
+  var userId=$.cookie("userId"); //用户id
+
+  window.onload = function (ev) {
+    layui.config({
+      base: 'res/static/js/'
+    }).use('house');
+  }
+
+  layui.use(['form','jquery','table'], function () {
+    var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery
+            ,table = layui.table;
+
+    var memberUserName = $.cookie('memberUserName');
+
+    if(memberUserName==null){
+      alert("请先登录");
+      window.location="user_login.html";
+    }
+
+    //猜您喜欢　　guess
+    loadGuessYouLike();
+
+
+    //列出该用户的购物车
+    //购物车——表格
+    var tableIns = table.render({
+      elem: '#house-usershop-table'
+      // , url: 'json/shop.json'
+      ,url: ServerIP+"/rest/agriculture/shoppingCartController/getShopCarInfoListAll?userId="+userId
+      , skin: 'line'
+      , cols: [[
+        {type: 'checkbox', width: 50}
+        , {title: '商品', align: 'center', minWidth: 260, templet: '#goodsTpl'}
+        , {title: '单价', align: 'center', minWidth: 160, templet: '#priceTpl'}
+        , {title: '数量', align: 'center', width: 150, templet: '#numTpl'}
+        , {title: '小计', align: 'center', width: 120, templet: '#totalTpl'}
+        , {title: '操作', align: 'center', width: 100, templet: '#shopTpl'}
+      ]]
+      , text: {//没有数据的时候
+        none: '<div class="house-usershop-table-none"><div><img src="res/static/img/shopnone.png"></div><p>购物车空空如也</p><a class="layui-btn layui-btn-primary" href="allProductList.html">去逛逛</a></div>'
+      }
+      , id: 'house-usershop-table'
+    });
+
+
+    //合计
+    var goodsVal = $(".house-usershop").find("#total").children("span")
+            ,copyWith = $(".house-usershop").find("#toCope").children("p").children("big")
+            ,copyTips = $(".house-usershop").find("#toCope").children("span");
+    //监听复选框选择 获得总数
+    table.on('checkbox(house-usershop-table)', function(obj){
+
+
+      var checkStatus = table.checkStatus('house-usershop-table');
+      goodsVal[0].innerHTML = 0;
+      $(checkStatus.data).each(function(){
+        goodsVal[0].innerHTML = (parseFloat(this.amount * this.productPrice) + Number(goodsVal[0].innerHTML)).toFixed(2);
+      });
+
+      //满减
+      // if(goodsVal[0].innerHTML > 200){
+      //   copyWith[0].innerHTML = '￥' + (goodsVal[0].innerHTML - 20).toFixed(2)
+      //   copyTips.css("display", "inline-block");
+      // }else{
+        copyWith[0].innerHTML =  '￥' + parseFloat(goodsVal[0].innerHTML).toFixed(2);
+        copyTips.css("display", "none");
+      // };
+
+      $(".house-usershop-table-num").children(".numal").html('已选 ' + checkStatus.data.length + ' 件');
+    });
+
+    table.on('tool(house-usershop-table)', function(obj){
+      var data = obj.data;
+      if(obj.event === 'del'){
+
+        layer.confirm('确定删除此物品？', function(index){
+          obj.del();
+
+          var arr=[];
+          arr.push(data.shoppingCartNo);
+          delShopCar(arr);
+
+          layer.close(index);
+        });
+
+
+      //增加购买数量
+      }else if(obj.event=== 'sub'){
+
+        //获得小计 单价
+        var totalTd = $(this).parents("td").siblings().find(".total")[0]
+                , totalPrice = $(this).parents("td").siblings().find("span").filter(".price")[0].innerHTML;
+
+        //获得数量
+        var numVal = $(this).parent("div").children("input");
+        numVal.val(Number(numVal.val()) + 1);
+        totalTd.innerHTML = '￥' + (numVal.val() * totalPrice).toFixed(2);
+
+        //把数据封装成对象
+        //获取现在的购买的数量
+        data.amount = $(this).parent().find("input").val();
+
+        subAndSupShop(data);
+
+
+      //减少购买数量
+      }else if(obj.event=== 'sup'){
+
+        var totalTd = $(this).parents("td").siblings().find(".total")[0]
+                , totalPrice = $(this).parents("td").siblings().find("span").filter(".price")[0].innerHTML;
+
+        //获得数量
+        var numVal = $(this).parent("div").children("input");
+        numVal[0].value = numVal[0].value > 1 ? numVal[0].value - 1 : 1;
+        totalTd.innerHTML = '￥' + (numVal.val() * totalPrice).toFixed(2);
+
+        data.amount = $(this).parent().find("input").val();
+
+        subAndSupShop(data);
+      }
+
+    });
+
+
+
+
+
+    //删除
+    $(".house-usershop").find("#batchDel").on('click', function(){
+
+      layer.msg("批量删除");
+
+      var checkStatus = table.checkStatus('house-usershop-table')
+              ,checkData = checkStatus.data;
+      if(checkData.length === 0){
+        layer.msg('请选择数据');
+      }else{
+
+        var shoppingCartNoArr=[];//存放商品在购物车的编号
+        $('.layui-table-main input[name="layTableCheckbox"]:checked').each(function(){//遍历每一个名字为nodes的复选框，其中选中的执行函数
+          var trRow = $(this).parent().parent().parent();//当前tr的位置
+          shoppingCartNoArr.push(trRow.find(".shoppingCartNo").val());
+        });
+
+        delShopCar(shoppingCartNoArr);
+
+
+      }
+    });
+
+
+
+    // 监听搜索操作
+    form.on('submit(data-search-btn)', function (data) {
+
+      //监听复选框选择 获得总数
+      table.on('checkbox(house-usershop-table)', function(obj){
+          console.log(obj)
+      })
+
+
+        var productIdArr =[];//定义一个数组 存放购买商品的id
+
+        var shoppingCartNoArr=[];//存放商品在购物车的编号
+
+        $('.layui-table-main input[name="layTableCheckbox"]:checked').each(function(){//遍历每一个名字为nodes的复选框，其中选中的执行函数
+          var trRow = $(this).parent().parent().parent();//当前tr的位置
+          productIdArr.push(trRow.find(".productId").val());//将选中的值添加到数组chk_value中、
+          shoppingCartNoArr.push(trRow.find(".shoppingCartNo").val());
+        });
+
+
+      var productIdStr = productIdArr.join(",");//数字转换成字符串并以","　逗号分割
+      var shoppingCartNoStr = shoppingCartNoArr.join(",");
+
+
+      //新开窗口，打开支付界面
+      window.open(ServerIP+"/rest/agriculture/alipayController/parProductById/"+userId+"/"+productIdStr+"/"+shoppingCartNoStr);
+
+
+      return false;
+    });
+
+    
+    //增加或者减少购买的数量
+    function subAndSupShop(userProductCar) {
+      //加入购物车
+      $.ajax({
+        type: "POST",
+        url: ServerIP+"/rest/agriculture/shoppingCartController/addShopCar",
+        cache: false, //禁用缓存
+        data: userProductCar,
+        dataType: "json",
+        success: function(result){
+          if (result.data!=null){
+            // alert("数据更改成功");
+
+            //这里以搜索为例
+            tableIns.reload();
+            return false;
+
+          }else{
+            alert("数据更改失败");
+          }
+        },
+        error: function(e){
+          console.log(e);
+          alert("数据更改失败");
+        }
+      });
+    }
+
+    //移除购物车商品
+    function delShopCar(shoppingCartNoArr) {
+      $.ajax({
+        type: "DELETE",
+        url: ServerIP+"/rest/agriculture/shoppingCartController/delShopCar/"+userId+"/"+shoppingCartNoArr,
+        cache: false, //禁用缓存
+        dataType: "json",
+        success: function(result){
+
+          if (result.bool==true){
+            layer.msg("删除成功");
+            //这里以搜索为例
+            tableIns.reload();
+            return false;
+
+          }else{
+            layer.msg("删除失败");
+          }
+        },
+        error: function(e){
+          console.log(e);
+          layer.msg("删除失败");
+        }
+      });
+
+    }
+
+
+  })
+
+
+
+
+
+  //猜您喜欢　　guess
+  function loadGuessYouLike() {
+
+    //如果用户没登录
+    if($.cookie('userId')==null || $.cookie('userId')==undefined || $.cookie('userId')==""){
+      //就推荐几个比较好的
+      $.ajax({
+        type: "GET",
+        url: ServerIP+"/rest/agriculture/productController/getProductByNewTimeInfo",
+        cache: false, //禁用缓存
+        data: {},
+        dataType: "json",
+        success: function(result){
+
+          if (result.data!=null){
+
+            for (let i = 0; i < result.data.length ; i++) {
+
+              var domHotProduct = ' <li>\n' +
+                      '      <a href="detail.html?productId='+result.data[i].productId+'">\n' +
+                      '        <div><img src="'+result.data[i].homeDisplayDrawing+'"></div>\n' +
+                      '        <p>'+result.data[i].productName+'</p>\n' +
+                      '        <p class="price">￥'+result.data[i].productPrice+'</p>\n' +
+                      '      </a>\n' +
+                      '    </li>';
+
+
+              $("#guessYouLike").append(domHotProduct);
+            }
+          }else{
+            layer.msg('数据加载失败了,请联系管理员!');
+            return;
+          }
+        },
+        error: function(e){
+          layer.msg('登录失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+          console.log(e)
+        }
+      });
+
+    }else{
+
+      //否则就根据用户的id去推荐
+      $.ajax({
+        type: "POST",
+        url: ServerIP+"/rest/agriculture/productController/getProductRecommendsByUserId",
+        cache: false, //禁用缓存
+        data: {
+          userId:$.cookie('userId')
+        },
+        dataType: "json",
+        success: function(result){
+
+          if (result.data!=null){
+
+            for (let i = 0; i < result.data.length ; i++) {
+              var domHotProduct = ' <li>\n' +
+                      '      <a href="detail.html?productId='+result.data[i].productId+'">\n' +
+                      '        <div><img src="'+result.data[i].homeDisplayDrawing+'"></div>\n' +
+                      '        <p>'+result.data[i].productName+'</p>\n' +
+                      '        <p class="price">￥'+result.data[i].productPrice+'</p>\n' +
+                      '      </a>\n' +
+                      '    </li>';
+
+              $("#guessYouLike").append(domHotProduct);
+            }
+          }else{
+            layer.msg('数据加载失败了,请联系管理员!');
+            return;
+          }
+        },
+        error: function(e){
+          layer.msg('登录失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+          console.log(e)
+        }
+      });
+
+
+    }
+
+
+  }
+
+
+
+
+
+</script>
+
+</body>
+</html>

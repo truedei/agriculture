@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>农乐城-首页</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="stylesheet" href="res/layui/css/layui.css">
+  <link rel="stylesheet" href="res/static/css/index.css">
+
+</head>
+<body>
+
+<div class="layui-fulid">
+<!--    <div><img src="res/static/img/banner.jpg"></div>-->
+  <div class="layui-carousel house-carousel" id="house-carousel">
+    <div carousel-item>
+      <div><img src="res/static/img/banner1.jpg"></div>
+      <div><img src="res/static/img/banner1.jpg"></div>
+    </div>
+  </div>
+</div>
+
+<div class="layui-container">
+  <div class="hot-sell">
+    <p class="house-title">热销推荐<a href="allProductList.html">更多优品  &gt;</a></p>
+    <div class="layui-row layui-col-space20" id="hotProduct">
+      <!--<a href="detail.html" class="layui-col-xs3 text">
+        <div><img src="res/static/img/home_img4.jpg"></div>
+        <p>一盏好看的台灯</p>
+        <p class="price">￥200</p>
+      </a>
+      <a href="detail.html" class="layui-col-xs3 text">
+        <div><img src="res/static/img/home_img5.jpg"></div>
+        <p>时尚瓷碗7件套</p>
+        <p class="price">￥200</p>
+      </a>
+      <a href="detail.html" class="layui-col-xs3 text">
+        <div><img src="res/static/img/home_img6.jpg"></div>
+        <p>智能电吹风</p>
+        <p class="price">￥200</p>
+      </a>
+      <a href="detail.html" class="layui-col-xs3 text">
+        <div><img src="res/static/img/home_img7.jpg"></div>
+        <p>一盏好看的台灯</p>
+        <p class="price">￥200</p>
+      </a>-->
+    </div>
+  </div>
+
+
+  <div class="hot-sell">
+    <p class="house-title">新品推荐<a href="allProductList.html">更多优品  &gt;</a></p>
+    <div class="layui-row layui-col-space20" id="newTime">
+
+      <!--<a href="detail.html" class="layui-col-xs3 text">
+        <div><img src="res/static/img/home_img11.jpg"></div>
+        <p>瘦脸仪</p>
+        <p class="price">￥200</p>
+      </a>-->
+    </div>
+  </div>
+</div>
+
+
+<div class="layui-container">
+  <div class="hot-sell">
+    <p class="house-title">猜您喜欢<a href="allProductList.html">更多新品  &gt;</a></p>
+    <div class="layui-row layui-col-space20" id="guessYouLike">
+
+     <!-- <a href="detail.html" class="layui-col-xs3 text">
+        <div><img src="res/static/img/home_img15.jpg"></div>
+        <p>森系小清新四件套</p>
+        <p class="price">￥200</p>
+      </a>-->
+    </div>
+  </div>
+</div>
+
+
+<script src="res/layui/layui.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+<script>
+  window.onload = function (ev) {
+    layui.config({
+      base: 'res/static/js/'
+    }).use('house');
+  }
+
+
+  layui.use(['form','jquery'], function () {
+    var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery;
+
+    var memberUserName = $.cookie('memberUserName');
+
+      //加载最热门的商品
+     loadHotProduct();
+      //加载最新发布的商品
+     loadNewTime();
+      //猜您喜欢　　guess
+     loadGuessYouLike();
+
+  })
+
+  //加载最热门的商品
+  function loadHotProduct() {
+    //加载热销推荐的商品　　前四名
+    $.ajax({
+      type: "GET",
+      url: ServerIP+"/rest/agriculture/productController/getProductByHotInfo",
+      cache: false, //禁用缓存
+      data: {},
+      dataType: "json",
+      success: function(result){
+
+        if (result.data!=null){
+
+          for (let i = 0; i < result.data.length ; i++) {
+            var domHotProduct ='  <a href="detail.html?productId='+result.data[i].productId+'" class="layui-col-xs3 text">\n' +
+                    '        <div><img src="'+result.data[i].homeDisplayDrawing+'" style="height: 220px;width: 220px;"></div>\n' +
+                    '        <p>'+result.data[i].productName+'</p>\n' +
+                    '        <p class="price">￥'+result.data[i].productPrice+'</p>\n' +
+                    '      </a>';
+
+            $("#hotProduct").append(domHotProduct);
+          }
+        }else{
+          layer.msg('数据加载失败了,请联系管理员!');
+          return;
+        }
+      },
+      error: function(e){
+        layer.msg('登录失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+        console.log(e)
+      }
+    });
+  }
+
+
+
+  //加载最新发布的商品
+  function loadNewTime() {
+    $.ajax({
+      type: "GET",
+      url: ServerIP+"/rest/agriculture/productController/getProductByNewTimeInfo",
+      cache: false, //禁用缓存
+      data: {},
+      dataType: "json",
+      success: function(result){
+
+        if (result.data!=null){
+
+          for (let i = 0; i < result.data.length ; i++) {
+            var domHotProduct ='  <a href="detail.html?productId='+result.data[i].productId+'" class="layui-col-xs3 text">\n' +
+                    '        <div><img src="'+result.data[i].homeDisplayDrawing+'" style="height: 220px;width: 220px;"></div>\n' +
+                    '        <p>'+result.data[i].productName+'</p>\n' +
+                    '        <p class="price">￥'+result.data[i].productPrice+'</p>\n' +
+                    '      </a>';
+
+            $("#newTime").append(domHotProduct);
+          }
+        }else{
+          layer.msg('数据加载失败了,请联系管理员!');
+          return;
+        }
+      },
+      error: function(e){
+        layer.msg('登录失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+        console.log(e)
+      }
+    });
+  }
+
+
+  //猜您喜欢　　guess
+  function loadGuessYouLike() {
+
+    //如果用户没登录
+    if($.cookie('userId')==null || $.cookie('userId')==undefined || $.cookie('userId')==""){
+        //就推荐几个比较好的
+      $.ajax({
+        type: "GET",
+        url: ServerIP+"/rest/agriculture/productController/getProductByNewTimeInfo",
+        cache: false, //禁用缓存
+        data: {},
+        dataType: "json",
+        success: function(result){
+
+          if (result.data!=null){
+
+            for (let i = 0; i < result.data.length ; i++) {
+              var domHotProduct ='  <a href="detail.html?productId='+result.data[i].productId+'" class="layui-col-xs3 text">\n' +
+                      '        <div><img src="'+result.data[i].homeDisplayDrawing+'" style="height: 220px;width: 220px;"></div>\n' +
+                      '        <p>'+result.data[i].productName+'</p>\n' +
+                      '        <p class="price">￥'+result.data[i].productPrice+'</p>\n' +
+                      '      </a>';
+
+              $("#guessYouLike").append(domHotProduct);
+            }
+          }else{
+            layer.msg('数据加载失败了,请联系管理员!');
+            return;
+          }
+        },
+        error: function(e){
+          layer.msg('登录失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+          console.log(e)
+        }
+      });
+
+    }else{
+
+      //否则就根据用户的id去推荐
+      $.ajax({
+        type: "POST",
+        url: ServerIP+"/rest/agriculture/productController/getProductRecommendsByUserId",
+        cache: false, //禁用缓存
+        data: {
+          userId:$.cookie('userId')
+        },
+        dataType: "json",
+        success: function(result){
+
+          if (result.data!=null){
+
+            for (let i = 0; i < result.data.length ; i++) {
+              var domHotProduct ='  <a href="detail.html?productId='+result.data[i].productId+'" class="layui-col-xs3 text">\n' +
+                      '        <div><img src="'+result.data[i].homeDisplayDrawing+'" style="height: 220px;width: 220px;"></div>\n' +
+                      '        <p>'+result.data[i].productName+'</p>\n' +
+                      '        <p class="price">￥'+result.data[i].productPrice+'</p>\n' +
+                      '      </a>';
+
+              $("#guessYouLike").append(domHotProduct);
+            }
+          }else{
+            layer.msg('数据加载失败了,请联系管理员!');
+            return;
+          }
+        },
+        error: function(e){
+          layer.msg('登录失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+          console.log(e)
+        }
+      });
+
+
+    }
+
+
+  }
+
+
+
+
+</script>
+
+</body>
+</html>

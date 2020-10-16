@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>地址框</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="stylesheet" href="res/layui/css/layui.css">
+  <link rel="stylesheet" href="res/static/css/index.css">
+
+</head>
+<body style="padding: 0;">
+
+  <div class="layui-form" lay-filter="useradd-iframe" id="useradd-iframe" style="padding: 0 40px 0 20px;">
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span>*</span>所在地区：</label>
+      <div class="layui-input-inline" id="ppppppppp">
+        <select name="province" id="provinceDom" lay-filter="province" lay-verify="required" >
+
+        </select>
+      </div>
+      <div class="layui-input-inline">
+        <select name="city" id="cityDom" lay-filter="city" lay-verify="required">
+
+        </select>
+      </div>
+      <div class="layui-input-inline">
+        <select name="area" id="areaDom" lay-filter="area" lay-verify="required">
+
+        </select>
+      </div>
+      <div class="layui-input-inline">
+        <select name="street" id="streetDom" lay-filter="street" lay-verify="required">
+
+        </select>
+      </div>
+      <div class="layui-input-inline">
+        <select name="village" id="villageDom" lay-filter="village" lay-verify="required">
+
+        </select>
+      </div>
+
+     <!-- <div class="layui-input-inline">
+        <select lay-verify="required" id="province">
+          <option value="">请选择</option>
+          <option value="0">江西省</option>
+          <option value="1">陕西省</option>
+          <option value="2">浙江省</option>
+        </select>
+      </div>
+      <div class="layui-input-inline">
+        <select lay-verify="required" id="city">
+          <option value="">请选择</option>
+          <option value="0">南昌市</option>
+          <option value="1">九江市</option>
+          <option value="2">赣州市</option>
+        </select>
+      </div>
+      <div class="layui-input-inline">
+        <select lay-verify="required" id="county">
+          <option value="">请选择</option>
+          <option value="0">青山湖区</option>
+          <option value="1">高新区</option>
+          <option value="2">东湖区</option>
+        </select>
+      </div>-->
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span>*</span>详细地址：</label>
+      <div class="layui-input-block">
+        <textarea id="completeAddress" lay-verify="required" placeholder="详细地址，街道、门牌号等" class="layui-textarea"></textarea>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span>*</span>收货人：</label>
+      <div class="layui-input-inline">
+        <input type="text" id="userName" required lay-verify="required" class="layui-input">
+      </div>
+      <label class="layui-form-label telephone"><span>*</span>手机号码：</label>
+      <div class="layui-input-inline">
+        <input type="text" id="mobilePhone" required lay-verify="required|phone" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">备注：</label>
+      <div class="layui-input-block">
+        <textarea id="remarks" lay-verify="required" placeholder="备注" class="layui-textarea"></textarea>
+      </div>
+    </div>
+
+    <input class="checkdef" id="defaultAddress" type="checkbox" lay-skin="primary" title="设为默认" >
+    <div class="layui-form-item layui-hide">
+      <input type="button" lay-submit lay-filter="useradd-submit" id="useradd-submit" value="确认">
+    </div>
+  </div>
+
+
+</body>
+</html>
+
+
+
+
+<script src="res/layui/layui.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+<script>
+  window.onload = function (ev) {
+    layui.config({
+      base: 'res/static/js/'
+    }).use('house');
+
+
+
+
+    //获取省
+    getProvinceInfoAllList("provinceDom",form);
+    //监听省下拉菜单
+    form.on('select(province)', function (data) {
+      // var message=$("select[name=province]").val();
+      getCityInfoById("provinceDom","cityDom",form);
+    });
+
+    //监听市下拉菜单
+    form.on('select(city)', function (data) {
+      getAreaInfoById("provinceDom","cityDom","areaDom",form);
+    });
+
+    //监听市下拉菜单
+    form.on('select(area)', function (data) {
+      getStreetInfoById("provinceDom","cityDom","areaDom","streetDom",form);
+    });
+
+    form.on('select(street)', function (data) {
+      getVillageInfoById("provinceDom","cityDom","areaDom","streetDom","villageDom",form);
+    });
+
+    //初始化数据
+    loadAddressInfo();
+
+
+  }
+
+  //初始化数据
+  function loadAddressInfo(){
+    $.ajax({
+      type: "GET"
+      ,url: ServerIP+'/rest/agriculture/shippingAddressController/getShippingAddressInfo'
+      ,data:{
+        userId:$.cookie("userId"),
+        shippingAddressId:getWindowURLKey("shippingAddressId")
+      }
+      ,cache: false, //禁用缓存
+      dataType: "json",
+      success: function(result){
+        var address = result.data;
+
+        if (address!=null){
+          $("#province").val(address.province);
+          $("#city").val(address.city);
+          $("#county").val(address.county);
+          $("#completeAddress").text(address.completeAddress);
+          $("#userName").val(address.userName);
+          $("#mobilePhone").val(address.mobilePhone);
+          $("#remarks").text(address.remarks);
+
+          //如果默认地址为1则选中
+          if(address.defaultAddress==1){
+            $('input:checkbox').attr("checked", true); //选中
+          }
+
+          //模拟点击省，从而获取市的数据
+          setTimeout(function () {
+            $('select[name="province"]').next().find('.layui-anim').children('dd[lay-value="'+result.data.province+'"]').click();
+          },100);
+
+          //点击完省之后加载完数据，再填充市
+          setTimeout(function () {
+            $("#cityDom").val(result.data.city||result.data.city==""?0:result.data.city);
+            form.render('select');
+          },200);
+
+          //点击市，从而获取县，区数据
+          setTimeout(function () {
+            $('select[name="city"]').next().find('.layui-anim').children('dd[lay-value="'+result.data.city+'"]').click();
+          },300);
+
+          //填充县区数据
+          setTimeout(function () {
+            $("#areaDom").val(result.data.area==null||result.data.area==""?0:result.data.area);
+            form.render('select');
+          },400)
+
+
+        }else{
+          layer.msg('获取数据失败');
+        }
+      },
+      error: function(e){
+        layer.msg('删除失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+        console.log(e)
+      }
+    });
+
+  }
+
+  $("#useradd-submit").click(function () {
+    //组装数据
+    var address={};
+
+    address.province=$("#province").val();
+    address.city=$("#city").val();
+    address.county=$("#county").val();
+    address.completeAddress=$("#completeAddress").val();
+    address.userName=$("#userName").val();
+    address.mobilePhone=$("#mobilePhone").val();
+    address.remarks=$("#remarks").val();
+
+    address.userId=$.cookie("userId");
+    address.shippingAddressId=getWindowURLKey("shippingAddressId");
+
+
+    console.log("修改的数据：")
+    console.log(address)
+    //后台请求
+    $.ajax({
+      type: "POST"
+      ,url: ServerIP+'/rest/agriculture/shippingAddressController/editShippingAddressInfo'
+      ,data:address
+      ,cache: false, //禁用缓存
+      dataType: "json",
+      success: function(result){
+        console.log(result)
+        if (result.data!=null){
+          layer.msg('修改成功');
+        }else{
+          layer.msg('修改失败');
+        }
+      },
+      error: function(e){
+        layer.msg('系统错误,请联系管理员,邮箱:8042965@qq.com');
+        console.log(e)
+      }
+    });
+
+  })
+
+
+</script>

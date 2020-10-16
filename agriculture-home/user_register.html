@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>分步表单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="res/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="res/static/css/public.css" media="all">
+    <link rel="stylesheet" href="res/static/js/lay-module/step-lay/step.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div carousel-item>
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">请设置账号</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="memberUserName" id="memberUserName" required lay-verify="required" placeholder="请输入想注册的账号" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">滑动验证</label>
+                                        <div class="layui-input-block">
+                                            <div id="slider"></div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formStep">下一步</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">姓名:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="userName" placeholder="请填您的姓名" class="layui-input" lay-verify="text" required />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">年龄:</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" name="age" placeholder="请填写您的年龄" value="" class="layui-input" lay-verify="number" required>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">性别:</label>
+                                        <div class="layui-input-block">
+                                            <select lay-verify="required" name="sex">
+                                                <option value="0" selected>请选择性别</option>
+                                                <option value="1" >男</option>
+                                                <option value="2">女</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">手机号:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="phone" placeholder="请填写您的手机号" class="layui-input" lay-verify="phone" required />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">邮箱:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="email" placeholder="请填写您的邮箱" class="layui-input" lay-verify="email" required />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">密码:</label>
+                                        <div class="layui-input-block">
+                                            <input type="password" name="password" placeholder="请填写密码" class="layui-input" lay-verify="text" required />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">确定密码:</label>
+                                        <div class="layui-input-block">
+                                            <input type="password" name="again_password" placeholder="请再次输入密码" class="layui-input" lay-verify="text" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button type="button" class="layui-btn layui-btn-primary pre">上一步</button>
+                                            <button class="layui-btn" lay-submit lay-filter="formStep2">
+                                                &emsp;确认注册
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div>
+                                <div style="text-align: center;margin-top: 90px;">
+                                    <i class="layui-icon layui-circle"
+                                       style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+                                    <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+                                        注册成功
+                                    </div>
+                                    <div style="font-size: 14px;color: #666;margin-top: 20px;">欢迎您的加入,您是第368136位加入的用户</div>
+                                </div>
+                                <div style="text-align: center;margin-top: 50px;">
+                                    <button class="layui-btn next">直接登录</button>
+                                    <button class="layui-btn layui-btn-primary">购我喜欢</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <hr>
+                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                        <h3>说明</h3><br>
+                        <h4>欢迎加入我们</h4>
+                        <p>农乐城是一个专注于农产品，特产的网站，在这里您买的放心，吃的安心！</p>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="res/layui/layui.js" charset="utf-8"></script>
+<script src="res/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+
+<script>
+
+    layui.use([ 'sliderVerify', 'jquery','form', 'step'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            step = layui.step,
+            sliderVerify = layui.sliderVerify;
+
+        var slider = sliderVerify.render({
+            elem: '#slider',
+            onOk: function(){//当验证通过回调
+                layer.msg("滑块验证通过");
+            }
+        })
+        $('#reset').on('click',function(){
+            slider.reset();
+        })
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            if(slider.isOk()){
+                layer.msg(JSON.stringify(data.field));
+            }else{
+                layer.msg("请先通过滑块验证");
+            }
+            return false;
+        });
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '500px',
+            stepItems: [{
+                title: '设置账号'
+            }, {
+                title: '设置基本信息'
+            }, {
+                title: '完成'
+            }]
+        });
+
+        var users={};
+
+
+        form.on('submit(formStep)', function (data) {
+
+            // $(location).attr('href', 'http://www.baidu.com')
+
+
+
+            users=data.field;
+            console.log('第一个表单的数据:',data.field);
+
+            if($("#memberUserName").val()==null || $("#memberUserName").val()== ""){
+                layer.msg("请输入账号");
+            }else{
+
+                //去查询是否存在该用户
+                $.ajax({
+                    type: "GET",
+                    url: ServerIP+"/rest/agriculture/memberUserController/getMemberUserInfo",
+                    cache: false, //禁用缓存
+                    data: data.field,
+                    dataType: "json",
+                    success: function(result){
+
+                        if (result.data==null){
+                            //如果不存在,就调到下一个Form
+                            step.next('#stepForm');
+
+                        }else{
+                            layer.msg('账户已经存在,请重新输入');
+                            slider.reset();
+                        }
+                    },
+                    error: function(e){
+                        console.log(e)
+                    }
+                });
+
+
+            }
+
+            return false;
+        });
+
+        form.on('submit(formStep2)', function (data) {
+
+            //合并数据
+            Object.assign(users, data.field);
+
+            //添加用户信息
+            $.ajax({
+                type: "POST",
+                url: ServerIP+"/rest/agriculture/memberUserController/addMemberUserInfo",
+                cache: false, //禁用缓存
+                data: users,
+                dataType: "json",
+                success: function(result){
+
+                    if (result.status==1){
+                        layer.msg('添加成功', function () {
+                            step.next('#stepForm');
+
+                            //账号存入cookie
+                            $.cookie('memberUserName', users.memberUserName);
+                            $.cookie('userId', result.data.userId);
+
+
+                        });
+                    }else{
+                        layer.msg('添加失败');
+                    }
+                },
+                error: function(e){
+                    console.log(e)
+                    layer.msg('添加失败');
+                }
+            });
+
+
+            return false;
+        });
+
+        $('.pre').click(function () {
+            // step.pre('#stepForm');
+            layer.msg("直接登录了")
+        });
+
+        $('.next').click(function () {
+            // step.next('#stepForm');
+            // layer.msg("直接登录了")
+
+            //mark=directly意思是直接登录
+            // window.location.href="index.html?mark=directly";
+
+            window.opener=null;
+            window.open('index.html?mark=directly');
+            window.close();
+
+
+        });
+    })
+</script>
+</body>
+</html>

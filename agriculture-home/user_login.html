@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>农乐城-登录</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="res/layui/css/layui.css">
+  <link rel="stylesheet" href="res/static/css/index.css">
+</head>
+<body>
+
+<div class="layui-fulid" id="house-login" >
+  <div class="layui-form" style="margin-right: 20%;">
+    <p>农乐城-登录</p>
+      <div class="layui-input-block login">
+        <i class="layui-icon layui-icon-username"></i>
+        <input type="text"  placeholder="请输入用户名" class="layui-input" id="memberUserName">
+      </div>
+      <div class="layui-input-block login">
+        <i class="layui-icon  layui-icon-password"></i>
+        <input type="password"  placeholder="请输入密码" class="layui-input" id="password">
+      </div>
+      <button class="layui-btn" id="user-login">登录</button>
+  </div>
+</div>
+
+
+<script src="res/layui/layui.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+
+<script>
+
+  layui.use([ 'jquery','form'], function () {
+    var $ = layui.$,
+            form = layui.form;
+
+
+    $("#user-login").click(function () {
+      var memberUserName = $("#memberUserName").val();
+      var password = $("#password").val();
+
+
+      if(memberUserName==null || password ==null || memberUserName=="" || password =="" ){
+        layer.msg("填写信息不完整,请检查后再试");
+        return;
+      }
+
+
+
+      //去查询是否存在该用户
+      $.ajax({
+        type: "GET",
+        url: ServerIP+"/rest/agriculture/memberUserController/login",
+        cache: false, //禁用缓存
+        data: {
+          memberUserName:memberUserName,
+          password:password
+        },
+        dataType: "json",
+        success: function(result){
+
+          if (result.data!=null){
+
+
+            layer.msg('登录成功');
+
+            //账号存入cookie
+            $.cookie('memberUserName', memberUserName);
+            $.cookie('userId', result.data.userId);
+
+
+
+            window.opener=null;
+            window.open('index.html?mark=directly');
+            window.close();
+
+
+          }else{
+            layer.msg('登录失败,请检查账号和密码');
+
+            return;
+          }
+        },
+        error: function(e){
+          layer.msg('登录失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+          console.log(e)
+        }
+      });
+
+
+    })
+
+
+  })
+
+
+</script>
+
+</body>
+</html>

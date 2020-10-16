@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>弄乐城-产品页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="res/layui/css/layui.css">
+    <link rel="stylesheet" href="res/static/css/index.css">
+
+</head>
+<style>
+    .filter .layui-input-block {
+        margin-left: 17px;
+        min-height: 36px;
+    }
+
+    .filter .layui-input-inline {
+        margin-left: 17px;
+        min-height: 36px;
+    }
+
+
+</style>
+<body>
+
+
+
+<div class="layui-container house-list">
+    <p class="classify"><a href="home.html">首页</a> &gt; <span>全部产品</span></p>
+<!--    <div class="list-banner"></div>-->
+    <div class="filter">
+
+        <form class="layui-form" action="" lay-filter="example">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 7px;">
+                <legend>分类:</legend>
+            </fieldset>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" id="productType">
+                    <!--<input type="checkbox" name="softType" id="type1" title="全部" value="全部" checked="">
+                    <input type="checkbox" name="softType" id="type2" title="蔬菜" value="蔬菜">
+                    <input type="checkbox" name="softType" id="type3" title="肉类" value="肉类">
+                    <input type="checkbox" name="softType" id="type4" title="海产" value="海产">
+                    <input type="checkbox" name="softType" id="type5" title="其他" value="其他">-->
+                </div>
+            </div>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 7px;">
+                <legend>排序:<font size="3" style="color: #7F0055">注意了排序规则，会根据您选择的次序而决定</font></legend>
+            </fieldset>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" >
+                    <input type="radio" name="soft" title="默认"    value="defaultSoft" checked="">
+                    <input type="radio" name="soft" title="成交数"  value="fixtureNumber" >
+                  <!--<input type="radio" name="soft" title="成交额"  value="turnover" >-->
+                    <input type="radio" name="soft" title="喜欢数"  value="likes" >
+                    <input type="radio" name="soft" title="收藏数"  value="favnum" >
+                    <input type="radio" name="soft" title="评论数"  value="comments" >
+                    <input type="radio" name="soft" title="价格↑"   value="hProductPrice" >
+                    <input type="radio" name="soft" title="价格↓"   value="dProductPrice" >
+                    <input type="radio" name="soft" title="上架时间" value="postTime" >
+                </div>
+            </div>
+
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 7px;">
+                <legend>产品发货地:</legend>
+            </fieldset>
+
+            <div class="layui-form-item">
+                <div class="layui-input-inline">
+                    <select name="province" id="provinceDom" lay-filter="province" lay-verify="required" >
+
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select name="city" id="cityDom" lay-filter="city" lay-verify="required">
+
+                    </select>
+                </div>
+            </div>
+
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 7px;">
+                <legend>产品名:</legend>
+            </fieldset>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-right: 17px;!important;">
+                    <input type="text"  name="productName" lay-verify="title" autocomplete="off" placeholder="请输入产品名" class="layui-input">
+                </div>
+            </div>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 7px;">
+            </fieldset>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn layui-btn-fluid"  id="searchProductBtn"  lay-submit lay-filter="formDemo">搜索产品</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-row layui-col-space25" id="productListInfoAll">
+
+    </div>
+
+
+</div>
+
+
+
+<script src="res/layui/layui.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<script src="res/static/js/html5.min.js"></script>
+<script src="res/static/js/respond.min.js"></script>
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+<script>
+    window.onload = function (ev) {
+        layui.config({
+            base: 'res/static/js/'
+        }).use('house');
+
+        //模拟点击
+        $("#searchProductBtn").click();
+    }
+
+    layui.use([  'jquery','form' ], function () {
+        var $ = layui.$,
+            form = layui.form;
+
+        //获取省
+        getProvinceInfoAllList("provinceDom",form);
+
+        //监听省下拉菜单
+        form.on('select(province)', function (data) {
+            // var message=$("select[name=province]").val();
+            getCityInfoById("provinceDom","cityDom",form);
+        });
+
+
+        //加载分类
+        $.ajax({
+            type: "POST",
+            url: ServerIP+'/rest/agriculture/sysConfigController/getSysSubConfigInfoPageList',
+            data:{
+                configId:2
+            },
+            cache: false, //禁用缓存
+            dataType: "json",
+            success: function(result){
+                if (result.data!=null){
+
+                    $("#productType").html("");//先清空
+                    $("#productType").html(' <input type="checkbox" name="softType"  title="全部" value="0" checked="">');
+
+                    for (let i = 0; i < result.data.length; i++) {
+                        var opt = '<input type="checkbox" name="softType" id="'+result.data[i].subId+'" title="'+result.data[i].subName+'" value="'+result.data[i].subId+'">';
+                        // var option = '<input type="checkbox" name="softType" value="'+result.data[i].subId+'" >'+result.data[i].subName+'>';
+                        $("#productType").append(opt);
+                    }
+
+                    //重载表格
+                    form.render();
+
+                }else{
+                    layer.msg('获取据失败');
+                }
+            },
+            error: function(e){
+                console.log(e);
+                layer.msg('获取据失败');
+            }
+        });
+
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            data = data.field;
+
+            var selectData = buildSelectData(data);
+
+            //加载数据
+            loadProductListInfoAll(selectData);
+
+            return false;
+        });
+
+
+        return false;
+    })
+    
+
+    //构造选择的查询的条件的数据
+    function buildSelectData(data) {
+        var selectData = {};
+
+        //拿到选中要查询的分类
+        var selectProductType = "";
+        $('input[name="softType"]:checked').each(function(){
+            selectProductType = selectProductType +$(this).val()+ ",";
+        });
+        selectProductType = selectProductType.substring(0,selectProductType.length-1);
+
+
+        selectData.productTypeStr = selectProductType; //分类
+        selectData.softStr = data.soft;//排序
+        selectData.province = data.province; //省
+        selectData.city = data.city;　//市
+        selectData.county = data.county;　//县
+        selectData.productName = data.productName;//产品名
+
+        return selectData;
+    }
+
+    //加载所有的商品信息
+    function loadProductListInfoAll(data) {
+
+
+            $.ajax({
+                type: "GET",
+                url: ServerIP+"/rest/agriculture/productController/getProductByConditionInfoList",
+                cache: false, //禁用缓存
+                data: data,
+                dataType: "json",
+                success: function(result){
+
+                    if (result.data!=null){
+
+                        $("#productListInfoAll").html("");
+
+                        for (let i = 0; i < result.data.length ; i++) {
+                            var productListInfoAllDom =' <div class="layui-col-xs6 layui-col-sm3">\n' +
+                                '            <div class="list-detail">\n' +
+                                '                <div class="img"><img src="'+result.data[i].homeDisplayDrawing+'" style="height: 290.68px;width: 290.68px;"></div>\n' +
+                                '                <p class="title"><a href="detail.html?productId='+result.data[i].productId+'">'+result.data[i].productName+'</a></p>\n' +
+                                '                <p><span class="price">￥'+result.data[i].productPrice+'</span><span>'+result.data[i].fixtureNumber+'</span>人付款</p>\n' +
+                                '            </div>\n' +
+                                '        </div>';
+
+                            $("#productListInfoAll").append(productListInfoAllDom);
+                        }
+                    }else{
+                        layer.msg('数据加载失败了,请联系管理员!');
+                        return;
+                    }
+                },
+                error: function(e){
+                    layer.msg('系统错误,请联系管理员,邮箱:8042965@qq.com');
+                    console.log(e)
+                }
+            });
+
+
+
+    }
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>农乐城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="stylesheet" href="res/layui/css/layui.css">
+  <link rel="stylesheet" href="res/static/css/index.css">
+</head>
+<style>
+
+  .span_head_shuxian{
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+</style>
+<body>
+
+<!--头-->
+<div class="house-header">
+  <div class="layui-container">
+    <div class="house-nav">
+      <span class="layui-breadcrumb denglu_qian" lay-separator="|" style="visibility: visible !important;">
+        <a href="user_login.html"  target="menuFrame" style="color: red !important;">亲,请登录</a>
+        <span class="span_head_shuxian">|</span>
+        <a href="user_register.html" target="menuFrame" >免费注册</a>
+        <span class="span_head_shuxian">|</span>
+        <a href="">在线客服</a>
+      </span>
+      <span  class="layui-breadcrumb denglu_hou" lay-separator="|" style="visibility: hidden;">
+        <span class="span_head_shuxian">欢迎您:</span>
+        <span class="span_head_shuxian" >
+          <a id="denglu_name" href="user_info.html" target="menuFrame"></a>
+        </span>
+        <span class="span_head_shuxian">|</span>
+        <a href="" id="logout">退出登录</a>
+        <span class="span_head_shuxian">|</span>
+        <a href="">在线客服</a>
+      </span>
+    </div>
+    <div class="house-banner layui-form">
+      <a class="banner" href="index.html">
+<!--        <img src="res/static/img/log.png" height="50px" width="250" alt="农乐城">-->
+<!--        <img src="res/static/img/banner.png" height="50px" width="250" alt="农乐城">-->
+        <img src="res/static/img/logo.jpg" height="50px" width="250" alt="农乐城">
+      </a>
+      <div class="layui-input-inline">
+        <input type="text" placeholder="搜索好物" class="layui-input"><i class="layui-icon layui-icon-house-find"></i>
+      </div>
+      <a class="shop" href="user_shop.html" target="menuFrame"><i class="layui-icon layui-icon-house-shop"></i><span class="layui-badge">1</span></a>
+    </div>
+    <ul class="layui-nav close" >
+      <li class="layui-nav-item layui-this" ><a href="home.html" target="menuFrame">首页</a></li>
+      <li class="layui-nav-item" ><a href="allProductList.html" target="menuFrame" >全部产品</a></li>
+<!--      <li class="layui-nav-item"><a href="allProductList.html" target="menuFrame">产品排行榜</a></li>-->
+<!--      <li class="layui-nav-item"><a href="allProductList.html" target="menuFrame">热门话题</a></li>-->
+<!--      <li class="layui-nav-item"><a href="about.html" target="menuFrame">关于我们</a></li>-->
+    </ul>
+    <button id="switch">
+      <span></span><span class="second"></span><span class="third"></span>
+    </button>
+  </div>
+</div>
+<!--头结束-->
+
+
+<!--身体-->
+<iframe name="menuFrame" id="menuFrame" onload="reinitIframe()" style="overflow:visible;border-top-width: 0px;"
+        scrolling="no" height="100%" width="100%" src="home.html">
+</iframe>
+
+<!--身体结束-->
+
+<!--尾-->
+<div class="house-footer" >
+  <div class="layui-container">
+    <div class="intro" >
+      <span class="first"><i class="layui-icon layui-icon-house-shield"></i>7天无理由退换货</span>
+      <span class="second"><i class="layui-icon layui-icon-house-car"></i>满99元全场包邮</span>
+      <span class="third"><i class="layui-icon layui-icon-house-diamond"></i>100%品质保证</span>
+      <span class="last"><i class="layui-icon layui-icon-house-tel"></i>客服400-2888-966</span>
+    </div>
+    <div class="about" >
+      <span class="layui-breadcrumb" lay-separator="|" style="visibility: visible !important;">
+        <a href="about.html">关于我们</a>
+        <span class="span_head_shuxian">|</span>
+        <a href="about.html">帮助中心</a>
+        <span class="span_head_shuxian">|</span>
+        <a href="about.html">售后服务</a>
+        <span class="span_head_shuxian">|</span>
+        <a href="about.html">配送服务</a>
+        <span class="span_head_shuxian">|</span>
+        <a href="about.html">关于货源</a>
+      </span>
+      <p>版权归农乐城所有 &copy; 2012-2020</p>
+    </div>   
+  </div>
+</div>
+<!--尾结束-->
+
+
+<script src="res/layui/layui.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+<script>
+  layui.use(['form','jquery'], function () {
+    var form = layui.form,
+            layer = layui.layer,
+        $ = layui.jquery;
+
+    var memberUserName = $.cookie('memberUserName');
+
+    if(memberUserName!=null){
+      $(".denglu_qian").remove();
+      $(".denglu_hou").css("visibility","visible");
+
+      $("#denglu_name").html(memberUserName);
+
+    }
+  })
+
+
+
+  //大屏图片滚动
+  window.onresize = function () {
+    reinitIframe();
+  }
+  function reinitIframe(){
+    var iframe = document.getElementById("menuFrame");
+    try{
+      var bHeight = iframe.contentWindow.document.body.scrollHeight;
+      var dHeight = iframe.contentWindow.document.documentElement.scrollHeight;
+      var height = Math.min(bHeight, dHeight);
+      iframe.height = height+50;
+    }catch (ex){}
+  }
+  // 定时触发
+  window.setInterval("reinitIframe()", 200);
+
+
+  $("#logout").click(function () {
+     alert("登出")
+
+    $.removeCookie("userId");
+    $.removeCookie("memberUserName");
+
+  })
+
+</script>
+
+</body>
+</html>

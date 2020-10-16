@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>家居商城-地址</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="stylesheet" href="res/layui/css/layui.css">
+  <link rel="stylesheet" href="res/static/css/index.css">
+
+</head>
+<body class="user">
+
+
+<div class="layui-container userpublic useradd">
+  <div class="layui-row layui-col-space20">
+    <p class="layui-hide-xs title">首页 &gt; <span>个人中心</span></p>
+    <div class="layui-col-sm2">
+      <ul class="user-list">
+        <li><a href="user_info.html">个人中心</a></li>
+<!--        <li><a href="">消息中心</a></li>-->
+        <li class="active"><a href="user_address.html">地址管理</a></li>
+        <li><a href="user_collect.html">我的收藏</a></li>
+<!--        <li><a href="">优惠券</a></li>-->
+<!--        <li><a href="">服务中心</a></li>-->
+      </ul>
+    </div>
+    <div class="layui-col-sm10">
+      <table class="layui-table" id="user-address" lay-filter="user-address"></table>
+      <button class="layui-btn layui-btn-primary address-add"><i class="layui-icon layui-icon-add-1">添加按钮</i></button>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/html" id="spaceTpl">
+  {{#  if(d.defaultAddress==1){ }}
+    <span id="default">默认</span>
+  {{#  } }}
+</script>
+<script type="text/html" id="addressTpl">
+  <a lay-event="del" style="color: #e39d55; margin-right: 15px; cursor: pointer;">删除</a>
+  <a lay-event="edit" style="color: #e39d55; cursor: pointer;">编辑</a>
+</script>
+</body>
+</html>
+
+
+<script src="res/layui/layui.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<script src="res/static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="res/static/js/public.js"></script>
+<script src="res/static/js/jquery.cookie.js"></script>
+
+<script>
+  window.onload = function (ev) {
+    layui.config({
+      base: 'res/static/js/'
+    }).use('house');
+  }
+
+  layui.use(['form', 'table'], function () {
+    var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+
+    //地址管理——表格
+    table.render({
+      elem: '#user-address'
+      ,url: ServerIP+'/rest/agriculture/shippingAddressController/getShippingAddressInfo?userId='+$.cookie("userId")
+      ,skin: 'line'
+      ,cols: [[
+        {type:'space', width:100, align:'center', templet: '#spaceTpl', width:90}
+        ,{field:'userName', title:'收货人', align:'center', width:90}
+        ,{field:'address', title:'地址', align:'center'}
+        ,{field:'mobilePhone', title:'联系方式', align:'center', width:120}
+        ,{title:'操作', align:'center', templet: '#addressTpl', width:120}
+      ]]
+    });
+
+    //地址管理——监听工具条
+    table.on('tool(user-address)', function(obj){
+      var data = obj.data;
+      if(obj.event === 'del'){
+        layer.confirm('真的删除行么', function(index){
+          // deleteShippingAddressById/{userId}/{shippingAddressId}
+          //去查询是否存在该用户
+          $.ajax({
+            type: "DELETE",
+            url: ServerIP+"/rest/agriculture/shippingAddressController/deleteShippingAddressById/"+$.cookie("userId")+"/"+data.shippingAddressId,
+            cache: false, //禁用缓存
+            dataType: "json",
+            success: function(result){
+
+              if (result.data!=null){
+                layer.msg('删除成功');
+                obj.del();
+                layer.close(index);
+              }else{
+                layer.msg('删除失败');
+                return;
+              }
+            },
+            error: function(e){
+              layer.msg('删除失败,系统错误,请联系管理员,邮箱:8042965@qq.com');
+              console.log(e)
+            }
+          });
+
+
+
+        });
+      }else if(obj.event === 'edit'){
+        layer.open({
+          type: 2
+          ,title: '编辑地址'
+          ,content: 'user_editAndAdd_address.html?mark=edit&userId='+$.cookie("userId")+"&shippingAddressId="+data.shippingAddressId
+          ,area: ['730px', '525px']
+          ,shade: 0.8
+          ,skin: 'address-class'
+          ,btn: '确定'
+          ,yes: function(index, layero){
+            window['layui-layer-iframe'+ index].layui.form.on('submit(useradd-submit)', function(data){
+              layer.close(index);
+            });
+            layero.find('iframe').contents().find("#useradd-submit").trigger('click');
+          }
+        });
+      }
+    });
+
+    $(".useradd").find(".address-add").on('click', function(){
+      layer.open({
+        type: 2
+        ,title: '添加收货地址'
+        ,content: 'user_editAndAdd_address.html'
+        ,area: ['730px', '525px']
+        ,shade: 0.8
+        ,skin: 'address-class'
+        ,btn: '确定'
+        ,yes: function(index, layero){
+          window['layui-layer-iframe'+ index].layui.form.on('submit(useradd-submit)', function(data){
+            layer.close(index);
+          });
+          layero.find('iframe').contents().find("#useradd-submit").trigger('click');
+        }
+      });
+    });
+
+
+
+  })
+</script>
